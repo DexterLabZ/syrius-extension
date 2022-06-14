@@ -1,0 +1,41 @@
+.icon-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 20px;
+  height: 20px;
+  position: relative;
+
+  svg {
+    margin: 0 auto;
+    display: block;
+  }
+}
+
+.menu-icon-dash {
+  height: 2px;
+  width: 20px;
+  position: absolute;
+  transition: all 0.4s ease-in-out;
+  transform-origin: right;
+  background-color: white;
+}
+
+.burger-opened .icon-container {
+
+  .menu-icon-dash {
+    background-color: #00E721;
+  }
+
+  #top {
+    transform: rotate(-45deg);
+  }
+
+  #middle {
+    opacity: 0;
+  }
+
+  #bottom {
+    transform: rotate(45deg);
+  }
+}
