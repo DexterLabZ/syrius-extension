@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { KeyStoreManager, Primitives, Zenon } from 'znn-ts-sdk';
+import { KeyStoreManager } from 'znn-ts-sdk';
 import ChangeAddressItem from '../../../components/change-address-item/change-address-item';
 import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 import { storeMaxAddressIndex, storeSelectedAddressIndex } from '../../../services/redux/walletSlice';
@@ -28,10 +28,6 @@ const ChangeAddress = () => {
     }
     fetchAddresses();
   }, []);
-
-  // const updateAddressInfoInLocalStorage = async ()=>{
-
-  // }
 
   const getAddresses = async (pass, name, maxIndex)=>{
     const _keyManager = new KeyStoreManager();
