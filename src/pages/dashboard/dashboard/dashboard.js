@@ -33,18 +33,21 @@ const Dashboard = () => {
   const walletCredentials = useSelector(state => state.wallet);
   const { handleSilentSpinner } = useContext(SilentSpinnerContext);
 
-  useEffect(async() => {
-    await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
-    
-    transactionsObserver.current = (new IntersectionObserver(loadTransactions, {
-      root: null,
-      rootMargin: `0px 0px 0px 0px`,
-      threshold: 1.0
-    }));
-    transactionsObserver.current.observe(document.getElementById("loadMoreTransactionsTrigger"));
-
+  useEffect(() => {
+  const loadMoreTransactionsTrigger = document.getElementById("loadMoreTransactionsTrigger");
+    const fetchData = async() => {
+      await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+      transactionsObserver.current = (new IntersectionObserver(loadTransactions, {
+        root: null,
+        rootMargin: `0px 0px 0px 0px`,
+        threshold: 1.0
+      }));
+      transactionsObserver.current.observe(loadMoreTransactionsTrigger);
+    }
+    fetchData();
+  
     return ()=>{
-      transactionsObserver.current.unobserve(document.getElementById("loadMoreTransactionsTrigger"));
+      transactionsObserver.current.unobserve(loadMoreTransactionsTrigger);
     }
   }, []);
 
@@ -62,7 +65,7 @@ const Dashboard = () => {
       const decrypted = await _keyManager.readKeyStore(pass, name);
 
       if(decrypted){
-        const currentKeyPair = decrypted.getKeyPair();
+        const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.getAddress()).toString();
         myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 

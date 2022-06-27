@@ -31,21 +31,24 @@ const Plasma = () => {
   const { handleModal } = useContext(ModalContext);
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
 
-  useEffect(async () => {
-    await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+  useEffect(() => {
+    const loadMoreFuseItemsTrigger = document.getElementById("loadMoreFuseItemsTrigger");
+      const fetchData = async() => {
+        await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+        fuseItemsListObserver.current = (new IntersectionObserver(loadFuseItems, {
+          root: null,
+          rootMargin: `0px 0px 0px 0px`,
+          threshold: 1.0
+        }));
+        fuseItemsListObserver.current.observe(loadMoreFuseItemsTrigger);
+      }
+      fetchData();
     
-    fuseItemsListObserver.current = (new IntersectionObserver(loadFuseItems, {
-      root: null,
-      rootMargin: `0px 0px 0px 0px`,
-      threshold: 1.0
-    }));
-    fuseItemsListObserver.current.observe(document.getElementById("loadMoreFuseItemsTrigger"));
-
-    return ()=>{
-      fuseItemsListObserver.current.unobserve(document.getElementById("loadMoreFuseItemsTrigger"));
-    }
+      return ()=>{
+        fuseItemsListObserver.current.unobserve(loadMoreFuseItemsTrigger);
+      }
   }, []);
-
+  
 
   const getWalletInfo = async (pass, name)=>{
     const _keyManager = new KeyStoreManager();
@@ -54,7 +57,7 @@ const Plasma = () => {
       const decrypted = await _keyManager.readKeyStore(pass, name);
       
       if(decrypted){
-        currentKeyPair.current = decrypted.getKeyPair();
+        currentKeyPair.current = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.current.getAddress()).toString();
         myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 

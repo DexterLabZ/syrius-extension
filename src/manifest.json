@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "manifest_version": 2,
-  "name": "ZNN Chrome Extension with React & Webpack",
-  "description": "A chrome extension built with React 17, Webpack 5, and Webpack Dev Server 4.",
+  "name": "ZNN Syrius Extension",
+  "description": "Browser extension for ZNN Network",
   "background": {
     "scripts": ["background.bundle.js"],
     "persistent": false

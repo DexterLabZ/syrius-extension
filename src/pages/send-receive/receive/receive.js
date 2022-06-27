@@ -19,7 +19,7 @@ const Receive = () => {
       const decrypted = await _keyManager.readKeyStore(pass, name);
       
       if(decrypted){
-        const currentKeyPair = decrypted.getKeyPair();
+        const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const address = (await currentKeyPair.getAddress()).toString(); 
         setAddress(address);
       }

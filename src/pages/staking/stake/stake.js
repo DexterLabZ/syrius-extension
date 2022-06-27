@@ -33,21 +33,23 @@ const Stake = () => {
   const { handleModal } = useContext(ModalContext);
   const { register, handleSubmit, control, formState: { errors }, reset, setValue } = useForm();
 
-  useEffect(async () => {
-    await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+  useEffect(() => {
+    const loadMoreStakeItemsTrigger = document.getElementById("loadMoreStakeItemsTrigger");
+      const fetchData = async() => {
+        await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+        stakeListObserver.current = (new IntersectionObserver(loadStakeItems, {
+          root: null,
+          rootMargin: `0px 0px 0px 0px`,
+          threshold: 1.0
+        }));
+        stakeListObserver.current.observe(loadMoreStakeItemsTrigger);
+      }
+      fetchData();
     
-    stakeListObserver.current = (new IntersectionObserver(loadStakeItems, {
-      root: null,
-      rootMargin: `0px 0px 0px 0px`,
-      threshold: 1.0
-    }));
-    stakeListObserver.current.observe(document.getElementById("loadMoreStakeItemsTrigger"));
-
-    return ()=>{
-      // Will be called last
-      stakeListObserver.current.unobserve(document.getElementById("loadMoreStakeItemsTrigger"));
-    }
-  }, []);
+      return ()=>{
+        stakeListObserver.current.unobserve(loadMoreStakeItemsTrigger);
+      }
+    }, []);
 
 
   const getWalletInfo = async (pass, name)=>{
@@ -57,7 +59,7 @@ const Stake = () => {
       const decrypted = await _keyManager.readKeyStore(pass, name);
       
       if(decrypted){
-        currentKeyPair.current = decrypted.getKeyPair();
+        currentKeyPair.current = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.current.getAddress()).toString();
         myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 
@@ -186,7 +188,7 @@ const Stake = () => {
         <div>
           <div>Are you sure you want to collect</div>
           <div>
-            <b>{uncollectedZnnReward} ZNN</b> ?
+            <b>{uncollectedZnnReward} QSR</b> ?
           </div>         
         </div>
       </AlertModal>)

@@ -7,6 +7,7 @@ import { TokenStandard } from 'znn-ts-sdk/dist/lib/src/model/primitives/token_st
 import TransactionItem from '../../components/transaction-item/transaction-item';
 import fallbackValues from '../../services/utils/fallbackValues';
 import { toast } from 'react-toastify';
+import { Address } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
 
 const SiteIntegrationLayout = ()=>{
   const [address, setAddress] = useState(""); 
@@ -58,7 +59,7 @@ const SiteIntegrationLayout = ()=>{
           const _keyManager = new KeyStoreManager();          
           const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
           if(decrypted){
-            const currentKeyPair = decrypted.getKeyPair();
+            const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
             const signedTransaction = await zenon.send(accountBlockTemplateSend, currentKeyPair);
             setSignedHash(signedTransaction.hash.toString());      
             chrome.runtime.sendMessage({
@@ -106,7 +107,7 @@ const SiteIntegrationLayout = ()=>{
         const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
         
         if(decrypted){
-          const currentKeyPair = decrypted.getKeyPair();
+          const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
           const signedTransaction = await zenon.send(accountBlockTemplateSend, currentKeyPair);
           setSignedHash(signedTransaction.hash.toString());
     
@@ -150,7 +151,7 @@ const SiteIntegrationLayout = ()=>{
       const decrypted = await _keyManager.readKeyStore(pass, name);
       
       if(decrypted){
-        const currentKeyPair = decrypted.getKeyPair();
+        const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.getAddress()).toString();
         myAddressObject.current = Address.parse(addr);
         setAddress(addr); 
@@ -197,11 +198,32 @@ const SiteIntegrationLayout = ()=>{
               {
                 integrationState.currentIntegrationStep === 'accepting' ?
                   <div className="mr-2 ml-2 max-w-100vw">
-                    <h3>Do you grant this website permission to read your <b>Address</b>, <b>Chain Identifier</b> and <b>Node URL</b> ?</h3>
-                    <div className='d-flex w-100 justify-content-around'>
+                    <div className='tooltip'>
+                      <p className="text-xs mb-0">Current Address</p>
+                      <span className="text-xs text-gray word-break-all" onClick={() => {try{navigator.clipboard.writeText(address); toast(`Copied to clipboard`, {
+                                position: "bottom-center",
+                                autoClose: 1000,
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true,
+                                newestOnTop: true,
+                                type: 'success',
+                                theme: 'dark'
+                              })}catch(err){console.error(err)}
+                            }}>{address}</span>
+                        <span className='tooltip-text mt-4'>Click to copy. Go to settings to change address.</span>
+                    </div>
+
+                    <h3 className="mt-4">Do you grant this website permission to read your <b>Address</b>, <b>Chain Identifier</b> and <b>Node URL</b> ?</h3>
+                    <div className='d-flex w-100 justify-content-around mt-4'>
                       <div onClick={()=>{window.close()}} className='button secondary pl-5 pr-5'>No</div>
                       <div onClick={()=>{getAddress()}} className={`button primary pl-5 pr-5 ${isFormValid?'':'disabled'}`}>Yes</div>
                     </div>
+                    <h5 className='text-gray mt-4 d-flex'>
+                      <img alt="" className='mr-1' src={require(`./../../assets/info-icon.svg`)} width='18px'></img>
+                      <span>You can change the current wallet and address from the Syrius Extension Settings</span>
+                    </h5>
                   </div> 
                 :''
               }
@@ -245,7 +267,18 @@ const SiteIntegrationLayout = ()=>{
                           <span className='tooltip-text'>{parseFloat(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance/Math.pow(10, walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)).toFixed(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)}</span>
                         </h2>
 
-                        <h4 className='mb-0 mt-1 text-gray tooltip'>
+                        <h4 onClick={() => {try{navigator.clipboard.writeText(address); toast(`Copied to clipboard`, {
+                              position: "bottom-center",
+                              autoClose: 1000,
+                              hideProgressBar: true,
+                              closeOnClick: true,
+                              pauseOnHover: false,
+                              draggable: true,
+                              newestOnTop: true,
+                              type: 'success',
+                              theme: 'dark'
+                            })}catch(err){console.error(err)}
+                          }} className='mb-0 mt-1 text-gray tooltip'>
                           {address.slice(0, 3) + '...' + address.slice(-3)}
                           <span className='tooltip-text'>{address}</span>
                         </h4>
@@ -260,6 +293,12 @@ const SiteIntegrationLayout = ()=>{
                         <div onClick={()=>{window.close()}} className='button secondary pl-5 pr-5'>No</div>
                         <div onClick={()=>{signTransaction()}} className={`button primary pl-5 pr-5 ${isFormValid?'':'disabled'}`}>Yes</div>
                       </div>
+
+                      <h5 className='text-gray mt-4 d-flex'>
+                        <img alt="" className='mr-1' src={require(`./../../assets/info-icon.svg`)} width='18px'></img>
+                        <span>You can change the current wallet and address from the Syrius Extension Settings</span>
+                      </h5>
+
                     </div>
                   </div> 
                 :''
@@ -288,16 +327,39 @@ const SiteIntegrationLayout = ()=>{
               {
                 integrationState.currentIntegrationStep === 'accepting' ?
                   <div>
+                    <div className='tooltip'>
+                      <p className="text-xs mb-0 mt-5">Current Address</p>
+                      <span className="text-xs text-gray word-break-all" onClick={() => {try{navigator.clipboard.writeText(address); toast(`Copied to clipboard`, {
+                                position: "bottom-center",
+                                autoClose: 1000,
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true,
+                                newestOnTop: true,
+                                type: 'success',
+                                theme: 'dark'
+                              })}catch(err){console.error(err)}
+                            }}>{address}</span>
+                        <span className='tooltip-text mt-4'>Click to copy. Go to settings to change address.</span>
+                    </div>
+
                     <div className="mt-4 mr-2 ml-2 max-w-100vw">
                       <h3>Do you want to send this account block ?</h3>
-                      <div style={{maxHeight: '350px', overflow: 'scroll'}}>
-                        {JSON.stringify(integrationState.accountBlockData)}
-                      </div>
+                      <pre style={{maxHeight: '220px', overflow: 'scroll', textAlign: 'left'}}>
+                        {JSON.stringify(integrationState.accountBlockData, undefined, 2)}
+                      </pre>
 
                       <div className='d-flex mt-4 w-100 justify-content-around max-w-100vw'>
                         <div onClick={()=>{window.close()}} className='button secondary pl-5 pr-5'>No</div>
                         <div onClick={()=>{sendAccountBlock()}} className={`button primary pl-5 pr-5 ${isFormValid?'':'disabled'}`}>Yes</div>
                       </div>
+
+                      <h5 className='text-gray mt-4 d-flex'>
+                        <img alt="" className='mr-1' src={require(`./../../assets/info-icon.svg`)} width='18px'></img>
+                        <span>You can change the current wallet and address from the Syrius Extension Settings</span>
+                      </h5>
+
                     </div>
                   </div> 
                 :''

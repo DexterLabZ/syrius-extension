@@ -7,7 +7,7 @@ import {
   Zenon,
 } from 'znn-ts-sdk';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetWalletState, storeWalletName, storeWalletPassword } from '../../../services/redux/walletSlice';
+import { loadAddressInfoForWalletFromStorage, resetWalletState, storeWalletName, storeWalletPassword } from '../../../services/redux/walletSlice';
 import { useForm } from "react-hook-form";
 import ControlledDropdown from '../../../components/custom-dropdown/controlled-dropdown';
 import { toast } from 'react-toastify';
@@ -114,6 +114,7 @@ const unlockWallet = async (pass, name)=>{
 
       await zenon.initialize(currentNodeUrl);
       dispatch(storeNodeUrl(currentNodeUrl));
+      dispatch(loadAddressInfoForWalletFromStorage(name));
 
       setUnlockStatusLabel("Unlocked !");
       storeCredentialsToBackgroundScript(pass, name);

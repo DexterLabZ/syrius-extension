@@ -28,22 +28,24 @@ const Delegate = () => {
   const [uncollectedZnnReward, setUncollectedZnnReward] = useState(0); 
   const [uncollectedQsrReward, setUncollectedQsrReward] = useState(0); 
 
-  useEffect(async() => {
-    await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+  useEffect(() => {
+    const loadMorePillarsTrigger = document.getElementById("loadMorePillarsTrigger");
+      const fetchData = async() => {
+        await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+        pillarListObserver.current = (new IntersectionObserver(loadPillars, {
+          root: null,
+          rootMargin: `0px 0px 0px 0px`,
+          threshold: 1.0
+        }));
+        pillarListObserver.current.observe(loadMorePillarsTrigger);
+      }
+      fetchData();
     
-    pillarListObserver.current = (new IntersectionObserver(loadPillars, {
-      root: null,
-      rootMargin: `0px 0px 0px 0px`,
-      threshold: 1.0
-    }));
-    pillarListObserver.current.observe(document.getElementById("loadMorePillarsTrigger"));
-
-    return ()=>{
-      // Will be called last
-      pillarListObserver.current.unobserve(document.getElementById("loadMorePillarsTrigger"));
-    }
+      return ()=>{
+        pillarListObserver.current.unobserve(loadMorePillarsTrigger);
+      }
   }, []);
-
+  
 
   const getWalletInfo = async (pass, name)=>{
     const _keyManager = new KeyStoreManager();
@@ -52,7 +54,7 @@ const Delegate = () => {
       const decrypted = await _keyManager.readKeyStore(pass, name);
       
       if(decrypted){
-        currentKeyPair.current = decrypted.getKeyPair();
+        currentKeyPair.current = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.current.getAddress()).toString();
         myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 

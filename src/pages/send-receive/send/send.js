@@ -41,7 +41,7 @@ const Send = () => {
       const decrypted = await _keyManager.readKeyStore(pass, name);
       
       if(decrypted){
-        const currentKeyPair = decrypted.getKeyPair();
+        const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.getAddress()).toString(); 
         setAddress(addr);
         myAddressObject.current = Primitives.Address.parse(addr);
@@ -91,7 +91,7 @@ const Send = () => {
   const sendTransaction = async (address, amount)=>{
     const _keyManager = new KeyStoreManager();
     const actualAmount = parseInt(amount*Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals));
-    const currentKeyPair = await (await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName)).getKeyPair().generateKeyPair();
+    const currentKeyPair = await (await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName)).getKeyPair(walletCredentials.selectedAddressIndex).generateKeyPair();
     const showSilentSpinner = handleSilentSpinner(
       <>
         <div className='text-bold'>
