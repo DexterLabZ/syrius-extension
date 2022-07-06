@@ -17,7 +17,7 @@ const ChangeAddress = () => {
      const fetchAddresses = async() => {
       await getAddresses(walletCredentials.walletPassword, walletCredentials.walletName, walletCredentials.maxAddressIndex);
   
-      addressInfo.current = JSON.parse(localStorage.getItem("addressInfo"));
+      addressInfo.current = JSON.parse(localStorage.getItem("addressInfo")) || {};
       addressInfo.current[walletCredentials.walletName] = {
         selectedAddressIndex: walletCredentials.selectedAddressIndex,
         maxAddressIndex: walletCredentials.maxAddressIndex
