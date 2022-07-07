@@ -9,8 +9,7 @@ import { motion } from 'framer-motion';
 import animationVariants from '../../../layouts/tabsLayout/animationVariants';
 import { useSelector } from 'react-redux';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext'
-import { emptyZts } from 'znn-ts-sdk/dist/lib/src/model/primitives/token_standard';
-import { emptyAddress, tokenAddress } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
+import { pillarAddress, plasmaAddress, stakeAddress } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
 import { toast } from 'react-toastify';
 
 const Dashboard = () => {
@@ -156,12 +155,27 @@ const Dashboard = () => {
       address: transactionItem.toAddress.toString(),
     }
 
+    switch(transformedTransaction.type){
+      case 'delegated':{
+          transformedTransaction.amount = null;
+          transformedTransaction.tokenSymbol = null;
+        break;
+      }
+      default:{}
+    }
+
     return transformedTransaction;
   }
 
   const identifyTransactionType = (transactionItem) =>{
     if(transactionItem.toAddress.toString() === myAddressObject.current.toString()){
       return 'received';
+    }else if(transactionItem.toAddress.toString() === plasmaAddress.toString()){
+      return 'fused';
+    }else if(transactionItem.toAddress.toString() === pillarAddress.toString()){
+      return 'delegated';
+    }else if(transactionItem.toAddress.toString() === stakeAddress.toString()){
+      return 'staked';
     }
     else{
       return 'sent';

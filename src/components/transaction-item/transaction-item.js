@@ -13,6 +13,15 @@ const TransactionItem = ({type, amount, tokenSymbol, address, displayFullAddress
               {(type==="sent" || type==="send") && 
                 <img alt="" className='' src={require('./../../assets/send-right-green.svg')} width='20px'></img>
               }
+              {(type==="staked") && 
+                <img alt="" className='' src={require('./../../assets/blocks.svg')} width='18px'></img>
+              }
+              {(type==="delegated") && 
+                <img alt="" className='' src={require('./../../assets/pillar.svg')} width='18px'></img>
+              }
+              {(type==="fused") && 
+                <img alt="" className='' src={require('./../../assets/lightning.svg')} width='18px'></img>
+              }
             </>
           :
             <>
@@ -21,6 +30,15 @@ const TransactionItem = ({type, amount, tokenSymbol, address, displayFullAddress
               }
               {(type==="sent" || type==="send") && 
                 <img alt="" className='' src={require('./../../assets/send-right-blue.svg')} width='20px'></img>
+              }
+              {(type==="staked") && 
+                <img alt="" className='' src={require('./../../assets/blocks.svg')} width='18px'></img>
+              }
+              {(type==="delegated") && 
+                <img alt="" className='' src={require('./../../assets/pillar.svg')} width='18px'></img>
+              }
+              {(type==="fused") && 
+                <img alt="" className='' src={require('./../../assets/lightning.svg')} width='18px'></img>
               }
             </>
         }
@@ -33,13 +51,16 @@ const TransactionItem = ({type, amount, tokenSymbol, address, displayFullAddress
 
         {amount} {tokenSymbol}
         <div className='text-gray text-left text-xs tooltip'>
-          {type==="received" && 
-            "From "
+          {
+            type==="received" ?
+              <>
+                {"From "}
+              </>
+            :
+            <>
+              {"To "}
+            </>
           }
-          {(type==="sent" || type==="send") && 
-            "To "
-          }
-
           {
             displayFullAddress?
             <div className='text-xs'>{address}</div>:
