@@ -4,6 +4,7 @@ import { KeyStoreManager } from 'znn-ts-sdk';
 import ChangeAddressItem from '../../../components/change-address-item/change-address-item';
 import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 import { storeMaxAddressIndex, storeSelectedAddressIndex } from '../../../services/redux/walletSlice';
+import { toast } from 'react-toastify';
 
 const ChangeAddress = () => {
   const [currentAddress, setCurrentAddress] = useState();
@@ -77,6 +78,18 @@ const ChangeAddress = () => {
       maxAddressIndex: walletCredentials.maxAddressIndex
     }
     localStorage.setItem("addressInfo", JSON.stringify(addressInfo.current));
+
+    toast(`Successfully changed address`, {
+      position: "bottom-center",
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      newestOnTop: true,
+      type: 'success',
+      theme: 'dark'
+    });
   }
    
   const addAddress = () => {    

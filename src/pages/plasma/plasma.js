@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext, useReducer } from 'react';
 import { KeyStoreManager, Zenon, Primitives } from 'znn-ts-sdk';
 import fallbackValues from '../../services/utils/fallbackValues';
 import FuseItem from '../../components/fuse-item/fuse-item';
@@ -9,6 +9,7 @@ import AlertModal from '../../components/modals/alert-modal';
 import { ModalContext } from '../../services/hooks/modal/modalContext';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
+import { SpinnerContext } from '../../services/hooks/spinner/spinnerContext';
 
 const Plasma = () => {
   const [address, setAddress] = useState(""); 
@@ -30,6 +31,7 @@ const Plasma = () => {
   const walletCredentials = useSelector(state => state.wallet);
   const { handleModal } = useContext(ModalContext);
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
+  const { handleSpinner } = useContext(SpinnerContext);
 
   useEffect(() => {
     const loadMoreFuseItemsTrigger = document.getElementById("loadMoreFuseItemsTrigger");
@@ -48,7 +50,6 @@ const Plasma = () => {
         fuseItemsListObserver.current.unobserve(loadMoreFuseItemsTrigger);
       }
   }, []);
-  
 
   const getWalletInfo = async (pass, name)=>{
     const _keyManager = new KeyStoreManager();
@@ -117,9 +118,15 @@ const Plasma = () => {
   }
 
   const fusePlasma = async (toFuseAmount) => {
+    const showSpinner = handleSpinner(
+      <div>
+        Fusing {toFuseAmount} QSR
+      </div>
+    );
     try{
-      const amountWithDecimals = parseInt(toFuseAmount) * Math.pow(10, fallbackValues.availableTokens["zts1qsrxxxxxxxxxxxxxmrhjll"]?.token.decimals || fallbackValues.decimals)
+      showSpinner(true);
       setFuseLabel("Fusing...");
+      const amountWithDecimals = parseInt(toFuseAmount) * Math.pow(10, fallbackValues.availableTokens["zts1qsrxxxxxxxxxxxxxmrhjll"]?.token.decimals || fallbackValues.decimals)
       const fuse = await zenon.embedded.plasma.fuse(myAddressObject.current, amountWithDecimals);
       await zenon.send(fuse, currentKeyPair.current);
       setToFuseAmount("");
@@ -137,11 +144,11 @@ const Plasma = () => {
         type: 'success',
         theme: 'dark'
       });
-
+      
+      showSpinner(false);
       setTimeout(()=>{
         setFuseLabel("Fuse plasma");
       }, 2500);
-
     }
     catch(err){
       let readableError = err;
@@ -162,6 +169,7 @@ const Plasma = () => {
         theme: 'dark'
       });
       setFuseLabel("Error fusing");
+      showSpinner(false);
 
       setTimeout(()=>{
         setFuseLabel("Fuse plasma");
