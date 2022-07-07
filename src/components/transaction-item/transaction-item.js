@@ -28,7 +28,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, displayFullAddress
       </div>
       <div className='transaction-data mr-2'>
         {
-          type[0].toUpperCase()+type.slice(1, type.length)+" "
+          type[0]?.toUpperCase()+type.slice(1, type.length)+" "
         }
 
         {amount} {tokenSymbol}

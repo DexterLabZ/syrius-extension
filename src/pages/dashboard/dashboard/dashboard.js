@@ -10,7 +10,8 @@ import animationVariants from '../../../layouts/tabsLayout/animationVariants';
 import { useSelector } from 'react-redux';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext'
 import { emptyZts } from 'znn-ts-sdk/dist/lib/src/model/primitives/token_standard';
-import { tokenAddress } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
+import { emptyAddress, tokenAddress } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
+import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const availableTokens = Object.keys(fallbackValues.availableTokens);
@@ -94,18 +95,13 @@ const Dashboard = () => {
   const loadTransactions = async() =>{
     try{
       if(shouldLoadMore){
-        const getBlocksByPage = await zenon.ledger.getBlocksByPage(myAddressObject.current, currentTransactionsPage.current, pageSize);
+        const getBlocksByPage = await zenon.ledger.getBlocksByPage(myAddressObject.current, currentTransactionsPage.current, pageSize);         
           if(getBlocksByPage.list.length > 0){
             transactionsCount.current += getBlocksByPage.list.length;
-
-            // Because we filter transactions we need to keep a separate count of them.
-            let newTransactions = getBlocksByPage.list.filter((transaction)=>{
-              return transaction.tokenStandard.toString() !== emptyZts.toString();
-            });
-
-            newTransactions = newTransactions.map((transaction)=>{
-              return transformTransactionItem(transaction);
-            });
+            let newTransactions = getBlocksByPage.list;
+            newTransactions = await Promise.all(newTransactions.map(async (transaction) => {
+              return await transformTransactionItem(transaction);
+            }));          
 
             setTransactions(prevTransactions => {
               transactions = [...prevTransactions, ...newTransactions];
@@ -128,16 +124,52 @@ const Dashboard = () => {
     }
     catch(err){
       console.error(err);
+      let readableError = err;
+      if(err.message) {
+        readableError = err.message;
+      }
+      readableError = (readableError+"").split("Error: ")[(readableError+"").split("Error: ").length-1];
+
+      toast(readableError + "",{    
+        position: "bottom-center",
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        newestOnTop: true,
+        type: 'error',
+        theme: 'dark'
+      });
     }
   }
 
-  const transformTransactionItem = (transactionItem) =>{
-    return{
-      type: transactionItem.toAddress.toString()==tokenAddress.toString()?'received':'sent',
+  const transformTransactionItem = async (transactionItem) =>{
+    if(transactionItem.blockType===3){
+      transactionItem = await getReferencedTransaction(transactionItem)
+    }
+    
+    const transformedTransaction = {
+      type: identifyTransactionType(transactionItem),
       amount: transactionItem.amount / Math.pow(10, transactionItem.token?.decimals || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals),
       tokenSymbol: transactionItem.token?.symbol || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.symbol || "?",
       address: transactionItem.toAddress.toString(),
     }
+
+    return transformedTransaction;
+  }
+
+  const identifyTransactionType = (transactionItem) =>{
+    if(transactionItem.toAddress.toString() === myAddressObject.current.toString()){
+      return 'received';
+    }
+    else{
+      return 'sent';
+    }
+  }
+
+  const getReferencedTransaction = async (transactionItem)=>{
+    return zenon.ledger.getBlockByHash(transactionItem.fromBlockHash);
   }
 
   const goToSend = () => {
