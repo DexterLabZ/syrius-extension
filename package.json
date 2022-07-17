@@ -11,8 +11,7 @@
     "build": "node utils/build.js",
     "start": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
-    "lint": "eslint src/**/*.js src/**/*.jsx",
-    "postinstall": "cd ./node_modules/znn-ts-sdk && npm i && npm run build"
+    "lint": "eslint src/**/*.js src/**/*.jsx"
   },
   "dependencies": {
     "@hot-loader/react-dom": "^17.0.2",
@@ -75,7 +74,6 @@
     "sass-loader": "^12.4.0",
     "source-map-loader": "^3.0.1",
     "style-loader": "^3.3.1",
-    "terser-webpack-plugin": "^5.3.1",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.5",
     "webpack": "^5.68.0",
@@ -84,7 +82,10 @@
     "webpack-obj-loader": "^1.0.4"
   },
   "browser": {
-    "crypto": false,
-    "stream": true
+    "stream": true,
+    "buffer": false,
+    "node:worker_threads": false,
+    "node:url": false,
+    "crypto": false
   }
 }

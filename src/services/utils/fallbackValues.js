@@ -1,7 +1,5 @@
 import React from 'react';
-import { Primitives, Zenon } from 'znn-ts-sdk';
-import { emptyAddress } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
-import { emptyTokenStandard, emptyZts } from 'znn-ts-sdk/dist/lib/src/model/primitives/token_standard';
+import { Constants } from 'znn-ts-sdk';
 
 const fallbackValues = {
   decimals: 8,
@@ -35,9 +33,9 @@ const fallbackValues = {
     </ul>
     )
   },
-  emptyAddress: emptyAddress,
-  emptyTokenStandard: emptyTokenStandard,
-  emptyZts: emptyZts,
+  emptyAddress: Constants.emptyAddress,
+  emptyTokenStandard: Constants.emptyTokenStandard,
+  emptyZts: Constants.emptyZts,
   stakingDurations: [
     {
       label: "1 Month",

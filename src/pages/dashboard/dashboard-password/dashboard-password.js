@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 import {
   KeyStoreManager,
-  Zenon,
+  Zenon
 } from 'znn-ts-sdk';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadAddressInfoForWalletFromStorage, resetWalletState, storeWalletName, storeWalletPassword } from '../../../services/redux/walletSlice';
@@ -30,8 +30,10 @@ const DashboardPassword = () => {
     unlockWallet(walletPassword, selectedWallet);
   };
 
-  useEffect(async () => {   
-    dispatch(resetWalletState());
+useEffect(() => {
+  dispatch(resetWalletState());
+
+  const fetchData = async() => {
     const loadedWallets = loadStorageWallets();
     if(loadedWallets){
       setWalletNames(loadedWallets);
@@ -47,6 +49,9 @@ const DashboardPassword = () => {
         }
       }
     }
+  }
+  fetchData();
+  
   setTimeout(() => {
     if(document.getElementById('moving-scene')){
       renderMovingBall()

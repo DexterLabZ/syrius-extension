@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { KeyStoreManager, Zenon, Primitives } from 'znn-ts-sdk';
+import { KeyStoreManager, Zenon, Primitives, Constants } from 'znn-ts-sdk';
 import TokenDropdown from '../../../components/token-dropdown/token-dropdown';
 import TransactionItem from '../../../components/transaction-item/transaction-item';
 import fallbackValues from '../../../services/utils/fallbackValues';
@@ -9,7 +9,6 @@ import { motion } from 'framer-motion';
 import animationVariants from '../../../layouts/tabsLayout/animationVariants';
 import { useSelector } from 'react-redux';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext'
-import { pillarAddress, plasmaAddress, stakeAddress } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
 import { toast } from 'react-toastify';
 
 const Dashboard = () => {
@@ -170,11 +169,11 @@ const Dashboard = () => {
   const identifyTransactionType = (transactionItem) =>{
     if(transactionItem.toAddress.toString() === myAddressObject.current.toString()){
       return 'received';
-    }else if(transactionItem.toAddress.toString() === plasmaAddress.toString()){
+    }else if(transactionItem.toAddress.toString() === Constants.plasmaAddress.toString()){
       return 'fused';
-    }else if(transactionItem.toAddress.toString() === pillarAddress.toString()){
+    }else if(transactionItem.toAddress.toString() === Constants.pillarAddress.toString()){
       return 'delegated';
-    }else if(transactionItem.toAddress.toString() === stakeAddress.toString()){
+    }else if(transactionItem.toAddress.toString() === Constants.stakeAddress.toString()){
       return 'staked';
     }
     else{

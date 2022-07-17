@@ -2,12 +2,9 @@ import React, {useState, useEffect, useRef} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nextIntegrationStep } from '../../services/redux/integrationSlice';
 import { KeyStoreManager, Zenon, Primitives } from 'znn-ts-sdk';
-import { AccountBlockTemplate } from 'znn-ts-sdk/dist/lib/src/model/nom/account_block_template';
-import { TokenStandard } from 'znn-ts-sdk/dist/lib/src/model/primitives/token_standard';
 import TransactionItem from '../../components/transaction-item/transaction-item';
 import fallbackValues from '../../services/utils/fallbackValues';
 import { toast } from 'react-toastify';
-import { Address } from 'znn-ts-sdk/dist/lib/src/model/primitives/address';
 
 const SiteIntegrationLayout = ()=>{
   const [address, setAddress] = useState(""); 
@@ -51,9 +48,9 @@ const SiteIntegrationLayout = ()=>{
       parseFloat(integrationState.transactionData.amount)){
         setIsFormValid(true);
         try{
-          const accountBlockTemplateSend = AccountBlockTemplate.send(
+          const accountBlockTemplateSend = Primitives.AccountBlockTemplate.send(
             Primitives.Address.parse(integrationState.transactionData.to),
-            TokenStandard.parse(integrationState.transactionData.tokenStandard),
+            Primitives.TokenStandard.parse(integrationState.transactionData.tokenStandard),
             parseFloat(integrationState.transactionData.amount));    
 
           const _keyManager = new KeyStoreManager();          
@@ -102,7 +99,7 @@ const SiteIntegrationLayout = ()=>{
   const sendAccountBlock = async()=>{
       setIsFormValid(true);
       try{
-        const accountBlockTemplateSend = AccountBlockTemplate.fromJson(integrationState.accountBlockData);
+        const accountBlockTemplateSend = Primitives.AccountBlockTemplate.fromJson(integrationState.accountBlockData);
         const _keyManager = new KeyStoreManager();        
         const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
         
@@ -153,7 +150,7 @@ const SiteIntegrationLayout = ()=>{
       if(decrypted){
         const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
         const addr = (await currentKeyPair.getAddress()).toString();
-        myAddressObject.current = Address.parse(addr);
+        myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 
 
         const getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
