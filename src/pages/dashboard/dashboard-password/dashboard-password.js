@@ -33,6 +33,11 @@ const DashboardPassword = () => {
 useEffect(() => {
   dispatch(resetWalletState());
 
+  if(!localStorage.getItem("currentNodeUrl")){
+    navigate("/initial-node-selection");
+    return;
+  }
+
   const fetchData = async() => {
     const loadedWallets = loadStorageWallets();
     if(loadedWallets){
@@ -114,6 +119,7 @@ const unlockWallet = async (pass, name)=>{
       dispatch(storeWalletPassword(pass));
       
       const zenon = Zenon.getSingleton();
+
       const currentNodeUrl = localStorage.getItem("currentNodeUrl") || connectionParameters.nodeUrl;
       localStorage.setItem("currentNodeUrl", currentNodeUrl);
 
@@ -221,7 +227,7 @@ const renderMovingBall = function(){
 
   return (
     <div className='black-bg'>
-      <MenuHeader/>
+      <MenuHeader changeNodeButton={true} />
         <div className="d-flex w-100 justify-content-center">
           <div className="mt-2" id="moving-scene" style={{height: '100px'}}>
           </div>

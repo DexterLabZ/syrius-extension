@@ -20,6 +20,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SpinnerProvider } from '../../services/hooks/spinner/spinnerContext';
 import { SilentSpinnerProvider } from '../../services/hooks/silent-spinner/silentSpinnerContext';
+import InitialNodeSelection from '../../pages/settings/change-node/initial-node-selection';
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ const MainLayout = () => {
                 <Routes>
                   <Route path="auth/*" element={<AuthLayout/>} />
                   <Route path="password" element={<DashboardPassword/>}/>
+                  <Route path="initial-node-selection" element={<InitialNodeSelection/>}/>
                   <Route path="tabs/*" element={<TabsLayout/>}/>
                   <Route path="site-integration" element={<SiteIntegrationLayout/>}/>
                 </Routes>

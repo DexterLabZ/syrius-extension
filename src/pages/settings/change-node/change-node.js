@@ -23,6 +23,8 @@ const ChangeNode = () => {
   const [nodeItems, setNodeItems] = useState(JSON.parse(localStorage.getItem("nodeList")) || []);
 
   useEffect(() => {
+    localStorage.setItem("currentNodeUrl", localStorage.getItem("currentNodeUrl") || connectionParameters.nodeUrl);
+
     if (nodeItems.length === 0) {
       if (!defaultNodes.includes(connectionParameters.nodeUrl)) {
         defaultNodes.push(connectionParameters.nodeUrl);
