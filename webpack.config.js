@@ -1,11 +1,10 @@
-var webpack = require('webpack'),
-  path = require('path'),
-  fileSystem = require('fs-extra'),
-  env = require('./utils/env'),
-  CopyWebpackPlugin = require('copy-webpack-plugin'),
-  HtmlWebpackPlugin = require('html-webpack-plugin'),
-  TerserPlugin = require('terser-webpack-plugin');
-var { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+const fileSystem = require('fs-extra');
+const env = require('./utils/env');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -35,6 +34,7 @@ if (fileSystem.existsSync(secretsPath)) {
 
 var options = {
   mode: process.env.NODE_ENV || 'development',
+  target: 'web',
   entry: {
     newtab: path.join(__dirname, './src', 'sections', 'Newtab', 'index.jsx'),
     options: path.join(__dirname, './src', 'sections', 'Options', 'index.jsx'),
@@ -44,6 +44,7 @@ var options = {
     devtools: path.join(__dirname, './src', 'sections', 'Devtools', 'index.js'),
     panel: path.join(__dirname, './src', 'sections', 'Panel', 'index.jsx'),
   },
+  devtool: 'cheap-module-source-map',
   chromeExtensionBoilerplate: {
     notHotReload: ['background', 'contentScript', 'devtools'],
   },
@@ -136,6 +137,8 @@ var options = {
           "buffer": require.resolve("buffer"),
           "crypto": require.resolve("crypto-browserify"),
           "path": require.resolve("path-browserify"),
+          "constants": require.resolve("constants-browserify"),
+          "assert": require.resolve("assert/"),
           "tls": false,
           "net": false,
           "zlib": false,
@@ -240,18 +243,5 @@ var options = {
     syncWebAssembly: true
   }
 };
-
-if (env.NODE_ENV === 'development') {
-  options.devtool = 'cheap-module-source-map';
-} else {
-  options.optimization = {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        extractComments: false,
-      }),
-    ],
-  };
-}
 
 module.exports = options;

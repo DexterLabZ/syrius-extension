@@ -1,4 +1,4 @@
-import { Primitives } from "znn-ts-sdk";
+import { Primitives } from 'znn-ts-sdk';
 const memoryPoolPageSize = 50;
 
 const arrayShuffle = (array) => {

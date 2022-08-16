@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Zenon } from "znn-ts-sdk";
-import { netId } from "znn-ts-sdk/dist/lib/src/global"
+import { Zenon, netId } from 'znn-ts-sdk';
 
 const initialState = {
   nodeUrl: Zenon.getSingleton().defaultServerUrl,

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ZNN Syrius Extension",
-  "description": "Browser extension for ZNN Network",
+  "description": "Syrius extension provides a non-custodial wallet solution for Zenon - Network of Momentum that can run in the browser",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
     "default_popup": "popup.html",
