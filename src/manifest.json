@@ -24,11 +24,6 @@
   "icons": {
     "128": "icon-128.png"
   },
-  "sidebar_action": {
-    "default_icon": "icon-128.png",
-    "default_title": "Sidebar",
-    "default_panel": "sidebar.html"
-  },
   "devtools_page": "devtools.html",
   "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'"
 }
