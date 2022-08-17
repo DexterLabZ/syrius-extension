@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const CustomDropdown = React.forwardRef(({name, className, options, onChange, onBlur, value, placeholder, displayKey = false, validationOptions}, ref) => {
+const CustomDropdown = React.forwardRef(({name, className, options, onChange, onBlur, value, label, placeholder, displayKey = false, validationOptions}, ref) => {
   const [isOpened, setIsOpened] = useState(false);
   const selectRef = useRef(ref);
   const [selectedIndex, setSelectedIndex] = useState();
@@ -31,6 +31,9 @@ const CustomDropdown = React.forwardRef(({name, className, options, onChange, on
 
   return (
       <div className={`Dropdown-root ${isOpened?'is-open':''}`}>
+        <div className='dropdown-label'>
+            {label || ""}
+        </div>
         <div className={`${className} w-100 Dropdown-control`} tabIndex="0"
           onClick={clickControl} ref={selectRef}>
             <span>

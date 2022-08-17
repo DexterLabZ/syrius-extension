@@ -175,7 +175,7 @@ const Send = () => {
               value={selectedToken} 
               placeholder="Select token"
               tokenSymbolPath={`token.symbol`} 
-              tokenStandardPath={`token.tokenStandard`}     
+              tokenStandardPath={`token.tokenStandard`} 
               className={`${errors.selectedTokenField?'custom-label-error':''}`} />
 
             <div className={`input-error ${errors.selectedTokenField?'':'invisible'}`}>
