@@ -152,6 +152,7 @@ const Dashboard = () => {
       amount: transactionItem.amount / Math.pow(10, transactionItem.token?.decimals || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals),
       tokenSymbol: transactionItem.token?.symbol || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.symbol || "?",
       address: transactionItem.toAddress.toString(),
+      hash: transactionItem.hash.toString()
     }
 
     switch(transformedTransaction.type){
@@ -251,7 +252,7 @@ const Dashboard = () => {
       <div className='transactions mt-2 ml-2 mr-2'>
         {
           transactions.map((transaction, i) => {
-            return <TransactionItem  key={"transaction-"+i} type={transaction.type} amount={transaction.amount} tokenSymbol={transaction.tokenSymbol} address={transaction.address}></TransactionItem>
+            return <TransactionItem  key={"transaction-"+i} type={transaction.type} amount={transaction.amount} tokenSymbol={transaction.tokenSymbol} address={transaction.address} hash={transaction.hash}></TransactionItem>
           })
         }
       </div>

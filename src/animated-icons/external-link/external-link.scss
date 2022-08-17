@@ -1,0 +1,44 @@
+.icon-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  position: relative;
+
+  svg {
+    margin: 0 auto;
+    display: block;
+  }
+}
+
+.animate-on-hover:hover .icon-container #exit-left {
+  animation-name: knock-up-right;
+  animation-duration: 0.8s;
+  animation-iteration-count: once;
+}
+
+@keyframes knock-up-right {
+  0% {
+    transform: translate(0px, 0px);
+  }
+
+  20% {
+    transform: translate(1px, -1px);
+  }
+
+  40% {
+    transform: translate(2px, -2px);
+  }
+
+  60% {
+    transform: translate(0px, 0px);
+  }
+
+  80% {
+    transform: translate(1px, -1px);
+  }
+
+  100% {
+    transform: translate(0px, 0px);
+  }
+
+}

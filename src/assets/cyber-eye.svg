@@ -4,14 +4,14 @@
 <path d="M8.634 43.4908C8.634 20.8855 25.8326 2.36397 47.8356 0.215893C46.443 0.0522632 44.9809 0 43.5535 0C19.4964 0 0.0696716 19.4894 0.0696716 43.4908C0.0696716 67.4922 19.5312 86.985 43.5535 86.985C44.9809 86.985 46.443 86.9292 47.8356 86.7691C25.8326 84.621 8.634 66.0961 8.634 43.4908Z" fill="#232121"/>
 </g>
 <g clip-path="url(#clip0_205_22)">
-<path d="M43.5535 78.5513L43.5535 86.9849" stroke="#1B1B1B" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M43.5535 -0.0151367L43.5535 51.9168" stroke="#1B1B1B" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M43.5535 78.5513L43.5535 86.9849" stroke="#1B1B1B" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M43.5535 -0.0151367L43.5535 51.9168" stroke="#1B1B1B" strokeLinecap="round" strokeLinejoin="round"/>
 </g>
 <g clip-path="url(#clip1_205_22)">
-<path d="M31.1847 55.673C13.6728 52.8809 1 44.6681 1 35" stroke="url(#paint1_linear_205_22)" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M88.0372 35C88.0372 44.6681 75.3644 52.8809 57.8177 55.673" stroke="url(#paint2_linear_205_22)" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M31.1847 51.673C13.6728 48.8809 1 40.6681 1 31" stroke="url(#paint3_linear_205_22)" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M88.0372 31C88.0372 40.6681 75.3644 48.8809 57.8177 51.673" stroke="url(#paint4_linear_205_22)" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M31.1847 55.673C13.6728 52.8809 1 44.6681 1 35" stroke="url(#paint1_linear_205_22)" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M88.0372 35C88.0372 44.6681 75.3644 52.8809 57.8177 55.673" stroke="url(#paint2_linear_205_22)" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M31.1847 51.673C13.6728 48.8809 1 40.6681 1 31" stroke="url(#paint3_linear_205_22)" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M88.0372 31C88.0372 40.6681 75.3644 48.8809 57.8177 51.673" stroke="url(#paint4_linear_205_22)" strokeLinecap="round" strokeLinejoin="round"/>
 </g>
 <g clip-path="url(#clip2_205_22)">
 <path d="M57.8177 54.2163C57.8177 54.54 57.8526 54.9159 57.8526 55.2362C57.8526 62.5926 51.8994 68.553 44.5535 68.553C37.1727 68.553 31.2195 62.5926 31.2195 55.2362C31.2195 47.8833 37.1727 41.9231 44.5535 41.9231C51.5164 41.9231 57.2607 47.2916 57.8177 54.2163Z" fill="url(#paint5_radial_205_22)"/>
