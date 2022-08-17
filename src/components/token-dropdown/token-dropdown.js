@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const TokenDropdown = React.forwardRef(({name, className, options, onChange, onBlur, value, placeholder, tokenStandardPath = false, tokenSymbolPath = false, tokenIconPath = false}, ref) => {
+const TokenDropdown = React.forwardRef(({name, className, options, onChange, onBlur, value, placeholder, label, tokenStandardPath = false, tokenSymbolPath = false, tokenIconPath = false}, ref) => {
   const [isOpened, setIsOpened] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState();
   const selectRef = useRef(ref);
@@ -30,6 +30,7 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
   }, []);
 
   useEffect(()=>{
+    console.log("selectedIndex", selectedIndex);
     options.filter((currentValue, i)=>{
       if(currentValue.token.tokenStandard === value)
         setSelectedIndex(i);
@@ -38,10 +39,13 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
 
   return (
     <div className={`Dropdown-root ${isOpened?'is-open':''}`}>
+        <div className='dropdown-label'>
+            {label || ""}
+        </div>
         <div className={`${className} w-100 Dropdown-control`} tabIndex="0"
           onClick={clickControl} ref={selectRef}>
             {
-              (
+              (selectedIndex || selectedIndex === 0) && (
                 (tokenSymbolPath.split('.').reduce((p,c)=>p&&p[c]||"", options[selectedIndex]))
                 +" "+
                 ((tokenStandardPath && (
@@ -50,8 +54,11 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
                   ((tokenStandardPath.split('.').reduce((p,c)=>p&&p[c]||"", options[selectedIndex]))+"").slice(-3)
                 )) || "")
               )
-              || value || placeholder
             } 
+            {
+              (!selectedIndex && selectedIndex !==0) && (
+              placeholder)
+            }
             <span className='Dropdown-arrow'></span>
         </div>
      
