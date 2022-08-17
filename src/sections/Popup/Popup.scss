@@ -552,6 +552,7 @@ img.button{
   margin-left: -100px;
   background: linear-gradient(90.98deg, #67E646 -8.16%, #26BA3F 101.55%);
   font-weight: bold;
+  opacity: 1;
   &::after{
     content: '';
     position: absolute;

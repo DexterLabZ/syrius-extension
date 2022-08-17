@@ -3,7 +3,7 @@ import './external-link.scss';
 
 const ExternalLinkIcon = () => {
   return (
-    <div className="icon-container">
+    <div className="external-link-icon-container">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M8.44444 4H7C5.34315 4 4 5.34315 4 7V17C4 18.6569 5.34315 20 7 20H17C18.6569 20 20 18.6569 20 17V15.5556"
           stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

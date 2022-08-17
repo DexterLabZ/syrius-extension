@@ -29,6 +29,16 @@ const CustomDropdown = React.forwardRef(({name, className, options, onChange, on
     }
   }, []);
 
+  useEffect(() => {
+    options.filter((currentValue, i)=>{
+      if(currentValue === value){
+        setSelectedIndex(i);
+        setIsOpened(false);
+        onChange(i, value);
+      }
+    });
+  }, [value]);
+
   return (
       <div className={`Dropdown-root ${isOpened?'is-open':''}`}>
         <div className='dropdown-label'>

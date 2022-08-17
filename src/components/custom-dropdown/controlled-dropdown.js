@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useController } from "react-hook-form";
 import TokenDropdown from '../token-dropdown/token-dropdown';
 import CustomDropdown from './custom-dropdown';
 
 const ControlledDropdown = React.forwardRef((props, ref) => {
-  const {
-    field
-  } = useController(props);
+  const { field } = useController(props);
+  const [value, setValue] = useState(field.value);
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
 
   switch(props.dropdownComponent || 'CustomDropdown'){
     default:
@@ -18,7 +21,7 @@ const ControlledDropdown = React.forwardRef((props, ref) => {
           options={props.options} 
           onChange={(...args)=>{props.onChange(...args); field.onChange(...args)}} 
           onBlur={(...args)=>{props.onBlur(...args); field.onBlur(...args)}} 
-          value={field.value} 
+          value={value} 
           placeholder={props.placeholder || ""}
           label={props.label || ""}
           displayKey={props.displayKey || false} 
@@ -34,7 +37,7 @@ const ControlledDropdown = React.forwardRef((props, ref) => {
           options={props.options} 
           onChange={(...args)=>{props.onChange(...args); field.onChange(...args)}} 
           onBlur={(...args)=>{props.onBlur(...args); field.onBlur(...args)}} 
-          value={field.value} 
+          value={value} 
           placeholder={props.placeholder || ""}
           label={props.label || ""}
           tokenSymbolPath={props.tokenSymbolPath || false} 
