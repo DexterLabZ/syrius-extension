@@ -9,6 +9,7 @@ const ControlledDropdown = React.forwardRef((props, ref) => {
   } = useController(props);
 
   switch(props.dropdownComponent || 'CustomDropdown'){
+    default:
     case ('CustomDropdown'): {
       return (
         <CustomDropdown 
@@ -18,7 +19,8 @@ const ControlledDropdown = React.forwardRef((props, ref) => {
           onChange={(...args)=>{props.onChange(...args); field.onChange(...args)}} 
           onBlur={(...args)=>{props.onBlur(...args); field.onBlur(...args)}} 
           value={field.value} 
-          placeholder={props.placeholder}
+          placeholder={props.placeholder || ""}
+          label={props.label || ""}
           displayKey={props.displayKey || false} 
           ref={ref} 
         />
@@ -34,6 +36,7 @@ const ControlledDropdown = React.forwardRef((props, ref) => {
           onBlur={(...args)=>{props.onBlur(...args); field.onBlur(...args)}} 
           value={field.value} 
           placeholder={props.placeholder || ""}
+          label={props.label || ""}
           tokenSymbolPath={props.tokenSymbolPath || false} 
           tokenStandardPath={props.tokenStandardPath || false} 
           ref={ref} 
