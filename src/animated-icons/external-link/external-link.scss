@@ -1,4 +1,4 @@
-.icon-container {
+.external-link-icon-container {
   display: flex;
   align-items: center;
   height: 100%;
@@ -10,7 +10,7 @@
   }
 }
 
-.animate-on-hover:hover .icon-container #exit-left {
+.animate-on-hover:hover .external-link-icon-container #exit-left {
   animation-name: knock-up-right;
   animation-duration: 0.8s;
   animation-iteration-count: once;

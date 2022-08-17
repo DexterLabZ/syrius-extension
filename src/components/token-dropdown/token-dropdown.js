@@ -30,7 +30,6 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
   }, []);
 
   useEffect(()=>{
-    console.log("selectedIndex", selectedIndex);
     options.filter((currentValue, i)=>{
       if(currentValue.token.tokenStandard === value)
         setSelectedIndex(i);

@@ -232,7 +232,6 @@ const renderMovingBall = function(){
           <div className="mt-2" id="moving-scene" style={{height: '100px'}}>
           </div>
         </div>
-
         <div className='ml-2 mr-2'>
           <form onSubmit={handleSubmit(onFormSubmit)}>
             <h2 className='mt-2'>Enter your password</h2>
