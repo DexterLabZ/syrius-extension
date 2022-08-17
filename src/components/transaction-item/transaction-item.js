@@ -1,6 +1,8 @@
 import React from 'react';
+import { toast } from 'react-toastify';
+import ExternalLinkIcon from '../../animated-icons/external-link/external-link';
 
-const TransactionItem = ({type, amount, tokenSymbol, address, displayFullAddress=false}) => {
+const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullAddress=false}) => {
   return (
     <div className='transaction mt-2'>
       <div className="transaction-icon mr-2">
@@ -45,32 +47,53 @@ const TransactionItem = ({type, amount, tokenSymbol, address, displayFullAddress
 
       </div>
       <div className='transaction-data mr-2'>
-        {
-          type[0]?.toUpperCase()+type.slice(1, type.length)+" "
-        }
-
-        {amount} {tokenSymbol}
-        <div className='text-gray text-left text-xs tooltip'>
+        <div className='d-flex justify-content-between mr-2 transaction-data'>
           {
-            type==="received" ?
+            type[0]?.toUpperCase()+type.slice(1, type.length)+" "
+          }
+          {amount} {tokenSymbol}
+          <div className='text-gray text-left text-xs tooltip cursor-pointer' onClick={() => {try{navigator.clipboard.writeText(address); toast(`Address copied`, {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            newestOnTop: true,
+            type: 'success',
+            theme: 'dark'
+          })}catch(err){console.error(err)} }}>
+            {
+              type==="received" ?
+                <>
+                  {"From "}
+                </>
+              :
               <>
-                {"From "}
+                {"To "}
               </>
-            :
-            <>
-              {"To "}
-            </>
-          }
-          {
-            displayFullAddress?
-            <div className='text-xs'>{address}</div>:
-            <>
-              {address.slice(0, 3) + '...' + address.slice(-3)}
-              <span className="tooltip-text text-md ml-5">{address}</span>
-            </>
-          }
+            }
+            {
+              displayFullAddress?
+              <div className='text-xs'>{address}</div>:
+              <>
+                {address.slice(0, 3) + '...' + address.slice(-3)}
+                <span className="tooltip-text text-md ml-5">{address}</span>
+              </>
+            }
+            <img alt="" className='ml-1' src={require('./../../assets/copy-icon.png')} width='8px'></img>
+          </div>
         </div>
+
       </div>
+        <a href={'https://explorer.zenon.org/transaction/' + hash} target="_blank">
+          <div className='tooltip'>
+            <div className='squared-button animate-on-hover'>
+              <ExternalLinkIcon></ExternalLinkIcon>
+              <span className='tooltip-text transaction-explorer-button-tooltip'>Open transaction in explorer</span>
+            </div>
+          </div>
+        </a>
     </div>
   );
 };

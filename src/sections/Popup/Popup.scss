@@ -646,6 +646,19 @@ img.button{
   box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.3);
 }
 
+.squared-button {
+  padding: 0.7em 1em;
+  cursor: pointer;
+  right: 14px;
+  bottom: 14px;
+  transition: all 0.4s ease-out;
+  border-radius: 6px;
+}
+
+.squared-button:hover {
+  box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.3);
+}
+
 .onboarding-progress-container {
   display: flex;
   position: relative;
@@ -1107,6 +1120,11 @@ img.button{
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+}
+
+.transaction-explorer-button-tooltip{
+  margin-left: -60px;
+  margin-top: -2px;
 }
 
 .close-icon{
