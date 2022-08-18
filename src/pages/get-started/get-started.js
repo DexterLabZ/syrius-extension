@@ -6,7 +6,7 @@ import {
 } from 'znn-ts-sdk';
 
 import { useNavigate } from 'react-router-dom';
-import {arrayShuffle} from '../../services/utils/utils';
+import {arrayShuffle, loadStorageWalletNames} from '../../services/utils/utils';
 import OrderWords from '../../components/order-words/order-words';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -32,6 +32,7 @@ const GetStarted = () => {
 
   useEffect(() => {
     setIsFlowFinished(false);
+    window.localStorage.setItem('OLDwallet', window.localStorage.getItem('wallet'));
 
     return () => {
       // Called when component is unmounted
@@ -41,36 +42,65 @@ const GetStarted = () => {
         // ToDo - Don't do this manually. Create a deleteKeyStore in ts sdk
         // Or create a getMnemonic() function that only returns a mnemonic but doesn't create a new keyStore yet
         window.localStorage.removeItem('TEMPwallet');
+        window.localStorage.removeItem('OLDwallet');
       // }
     };
   },[]);
 
   const validateCredentials = async (walletName, password, repeatPassword) => {
-    if(password === repeatPassword){
-      
-      return true;
+    if(walletName && password && password === repeatPassword){
+      try{
+        const isValidName = validateWalletName(walletName);
+
+        if(isValidName!==true){
+          return new Error(isValidName);
+        }
+
+        return true
+      }
+      catch(err){
+        console.error(err);
+        throw new Error(err);
+      }
     }
-    return false;
+    else{
+      console.error("Not valid");
+      throw new Error("Invalid wallet name or password");
+    }
   }
   
+  const validateWalletName = (walletName) =>{
+    if(walletName){
+      const loadedWallets = loadStorageWalletNames();
+
+      if((loadedWallets.length > 0) && (loadedWallets.filter((existingWallet)=>existingWallet===walletName).length > 0)){
+        return 'Wallet name already used'
+      }
+      return true
+    }else{
+      return "Invalid wallet name"
+    }
+  }
+
   const saveKeyStore = () => {
     // ToDo - Don't do this manually. Read the first ToDo
     localStorage.setItem('wallet', window.localStorage.getItem('TEMPwallet'));
     window.localStorage.removeItem('TEMPwallet');
+    window.localStorage.removeItem('OLDwallet');
   }
   
   const getNewMnemonic = async (pass, name) => {
     return new Promise((resolve, reject)=>{
       const _keyManager = new KeyStoreManager();
       _keyManager.createNew(pass, name)
-      .then(async res => {      
-        const tempMnemonic = (await _keyManager.readKeyStore(pass, name))['mnemonic'];
-        
-        // ToDo - Don't do this manually. Read the first ToDo
-        window.localStorage.setItem('TEMPwallet', window.localStorage.getItem('wallet'));
-        window.localStorage.removeItem('wallet');
+        .then(async res => {      
+          const tempMnemonic = (await _keyManager.readKeyStore(pass, name))['mnemonic'];
+          
+          // ToDo - Don't do this manually. Read the first ToDo
+          window.localStorage.setItem('TEMPwallet', window.localStorage.getItem('wallet'));
+          window.localStorage.removeItem('wallet');
 
-        resolve(tempMnemonic);
+          resolve(tempMnemonic);
         })
         .catch(err => {
           reject(err);
@@ -83,12 +113,37 @@ const GetStarted = () => {
       let isValidated = false;
       
       switch(currentFlowStep){
+        default:
         case 0:{
-          if(validateCredentials(walletName, password, repeatPassword)) {
+          try{
+            const isValid = await validateCredentials(walletName, password, repeatPassword);
+            if(isValid!==true) {
+              throw new Error(isValid);
+            }
             const generatedMnemonic = await getNewMnemonic(password, walletName)
             setMnemonic(generatedMnemonic);
             setShuffledMnemonic(arrayShuffle(generatedMnemonic.split(" ")));
             isValidated = true;
+          }
+          catch(err){
+            console.error(err);
+            let readableError = err;
+            if(err.message) {
+              readableError = err.message;
+            }
+            readableError = (readableError+"").split("Error: ")[(readableError+"").split("Error: ").length-1];
+      
+            toast(readableError + "",{    
+              position: "bottom-center",
+              autoClose: 2500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              newestOnTop: true,
+              type: 'error',
+              theme: 'dark'
+            });
           }
           break;
         }
@@ -138,11 +193,19 @@ const GetStarted = () => {
     return orderedMnemonic.length === originalMnemonic.length && orderedMnemonic.every((value, index) => value === originalMnemonic[index])
   }
 
+  const beforeLeave = ()=>{
+    if(!isFlowFinished){
+      localStorage.setItem('wallet', window.localStorage.getItem('OLDwallet'));
+      window.localStorage.removeItem('TEMPwallet');
+      window.localStorage.removeItem('OLDwallet');
+    }
+  }
+
   return (
     <div className='black-bg onboarding-layout'>
       <div className='header'>
         <div className='back-button-container'>
-          <NavBack/>
+          <NavBack beforeLeave={()=>beforeLeave()}/>
         </div>
         <h1 className='mt-0'>Backup phrase</h1>
         {/* <h1 className='mt-0'>Confirm backup phrase</h1> */}

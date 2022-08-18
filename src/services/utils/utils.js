@@ -1,4 +1,4 @@
-import { Primitives } from 'znn-ts-sdk';
+import { KeyStoreManager, Primitives } from 'znn-ts-sdk';
 const memoryPoolPageSize = 50;
 
 const arrayShuffle = (array) => {
@@ -41,5 +41,20 @@ const receiveAllBlocks = async (zenon, currentKeyPair) => {
     resolve();
   })
 }
+
+const loadStorageWalletNames = () => {
+  const _keyManager = new KeyStoreManager();
+  const addresses = _keyManager.listAllKeyStores();
+  let wallets = [];
+
+  if (Object.keys(addresses).length > 0) {
+    for (const key in addresses) {
+      if (addresses.hasOwnProperty(key)) {
+        wallets.push(key);
+      }
+    }
+  }
+  return wallets;
+}
     
-export {arrayShuffle, receiveAllBlocks};
+export {arrayShuffle, receiveAllBlocks, loadStorageWalletNames};

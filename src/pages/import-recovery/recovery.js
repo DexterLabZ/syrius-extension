@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import fallbackValues from '../../services/utils/fallbackValues';
 import { toast } from 'react-toastify';
+import { loadStorageWalletNames } from '../../services/utils/utils';
 
 const Recovery = () => {
   const [mnemonic, setMnemonic] = useState("");
@@ -24,6 +25,8 @@ const Recovery = () => {
 
   useEffect(() => {
     setIsFlowFinished(false);
+    window.localStorage.setItem('OLDwallet', window.localStorage.getItem('wallet'));
+
     return () => {
       // Called when component is unmounted
        
@@ -32,6 +35,7 @@ const Recovery = () => {
         // ToDo - Don't do this manually. Create a deleteKeyStore in ts sdk
         // Or create a getMnemonic() function that only returns a mnemonic but doesn't create a new keyStore yet
         window.localStorage.removeItem('TEMPwallet');
+        window.localStorage.removeItem('OLDwallet');
       // }
     };
   },[]);
@@ -40,12 +44,18 @@ const Recovery = () => {
   const validateCredentials = async (mnemonic, walletName, password, repeatPassword) => {
     if(walletName && password && password === repeatPassword){
       try{
-        const isValid = await createKeystoreFromMnemonic(mnemonic, password, walletName);
-        if(isValid){
-          return true
-        }else{
-          throw new Error("Unknown error");
+        const isValidName = validateWalletName(walletName);
+
+        if(isValidName!==true){
+          return new Error(isValidName);
         }
+        
+        const isValidKeystore = await createKeystoreFromMnemonic(mnemonic, password, walletName);
+        if(isValidKeystore!==true){
+          return new Error(isValidKeystore);
+        }
+
+        return true
       }
       catch(err){
         console.error(err);
@@ -62,6 +72,7 @@ const Recovery = () => {
     // ToDo - Don't do this manually. Read the first ToDo
     localStorage.setItem('wallet', window.localStorage.getItem('TEMPwallet'));
     window.localStorage.removeItem('TEMPwallet');
+    window.localStorage.removeItem('OLDwallet');
   }
 
   const createKeystoreFromMnemonic = (mnemonic, pass, name) => {
@@ -97,6 +108,19 @@ const Recovery = () => {
     }
   }
 
+  const validateWalletName = (walletName) =>{
+    if(walletName){
+      const loadedWallets = loadStorageWalletNames();
+
+      if((loadedWallets.length > 0) && (loadedWallets.filter((existingWallet)=>existingWallet===walletName).length > 0)){
+        return 'Wallet name already used'
+      }
+      return true
+    }else{
+      return "Invalid wallet name"
+    }
+  }
+
   const isCorrectMnemonic = (inputMnemonic) =>{
     if(inputMnemonic.split(" ").length === 24){
       return true;
@@ -108,6 +132,7 @@ const Recovery = () => {
     let isValidated = false;
 
     switch(currentFlowStep){
+      default:
       case 0:{       
         if(isCorrectMnemonic(mnemonic)){
           isValidated = true;
@@ -118,11 +143,12 @@ const Recovery = () => {
       case 1:{
         try{
           const isValid = await validateCredentials(mnemonic, walletName, password, repeatPassword);
-          if(isValid) {
-            isValidated = true;
-          }else{
-            throw new Error("Unknown error");
+          if(isValid!==true) {
+            throw new Error(isValid);
           }
+          isValidated = true;
+          setIsFlowFinished(true);  
+          saveKeyStore();  
         }
         catch(err){
           console.error(err);
@@ -143,14 +169,10 @@ const Recovery = () => {
             type: 'error',
             theme: 'dark'
           });
-  
         }
         break;
       }
       case 2:{
-        setIsFlowFinished(true);  
-        saveKeyStore();
-
         navigate("/password");
         break;
       }
@@ -163,11 +185,19 @@ const Recovery = () => {
 
   };
 
+  const beforeLeave = ()=>{
+    if(!isFlowFinished){
+      localStorage.setItem('wallet', window.localStorage.getItem('OLDwallet'));
+      window.localStorage.removeItem('TEMPwallet');
+      window.localStorage.removeItem('OLDwallet');
+    }
+  }
+
   return (
     <div className='black-bg onboarding-layout'>
       <div className='header'>
         <div className='back-button-container'>
-          <NavBack/>
+          <NavBack beforeLeave={()=>beforeLeave()}/>
         </div>
       <h1 className='mt-0'>Import seed</h1>
       </div>
