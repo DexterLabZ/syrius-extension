@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import ControlledDropdown from '../../../components/custom-dropdown/controlled-dropdown';
 import { toast } from 'react-toastify';
 import { storeNodeUrl } from '../../../services/redux/connectionParametersSlice';
+import { loadStorageWalletNames } from '../../../services/utils/utils';
 
 const DashboardPassword = () => { 
   const [walletPassword, setWalletPassword] = useState("");
@@ -39,7 +40,7 @@ useEffect(() => {
   }
 
   const fetchData = async() => {
-    const loadedWallets = loadStorageWallets();
+    const loadedWallets = loadStorageWalletNames();
     if(loadedWallets){
       setWalletNames(loadedWallets);
 
@@ -93,20 +94,6 @@ const onSelectWallet = (index, value) => {
   setSelectedWallet(value);
 }
 
-const loadStorageWallets = () => {
-  const _keyManager = new KeyStoreManager();
-  const addresses = _keyManager.listAllKeyStores();
-  let wallets = [];
-
-  if (Object.keys(addresses).length > 0) {
-    for (const key in addresses) {
-      if (addresses.hasOwnProperty(key)) {
-        wallets.push(key);
-      }
-    }
-  }
-  return wallets;
-}
 const unlockWallet = async (pass, name)=>{
   const _keyManager = new KeyStoreManager();
   setUnlockStatusLabel("Unlocking in progress ...");

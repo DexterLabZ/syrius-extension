@@ -3,11 +3,16 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-const NavBack = () => {
+const NavBack = ({beforeLeave = ()=>{}}) => {
   const navigate = useNavigate();
 
+  const goBack = async () => {
+    await beforeLeave();
+    navigate(-1);
+  }
+
   return (
-    <img alt="" onClick={() => navigate(-1)} className='header-button' src={require('./../../assets/simple-back.svg')} width='20px'></img>
+    <img alt="" onClick={() => goBack()} className='header-button' src={require('./../../assets/simple-back.svg')} width='20px'></img>
   );
 };
 
