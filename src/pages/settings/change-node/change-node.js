@@ -67,27 +67,50 @@ const ChangeNode = () => {
     }
     catch (err) {
       // Connect back to default node
-      await zenon.initialize(connectionParameters.nodeUrl, false, 2500);
-
-      let readableError = err;
-      if (err.message) {
-        readableError = err.message;
+      try {
+        await zenon.initialize(connectionParameters.nodeUrl, false, 2500);
+        let readableError = err;
+        if (err.message) {
+          readableError = err.message;
+        }
+        readableError = (readableError + "").split("Error: ")[(readableError + "").split("Error: ").length - 1];
+  
+        console.error("Error ", readableError);
+        toast(readableError + "", {
+          position: "bottom-center",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          newestOnTop: true,
+          type: 'error',
+          theme: 'dark'
+        });
+        showSpinner(false);  
       }
-      readableError = (readableError + "").split("Error: ")[(readableError + "").split("Error: ").length - 1];
-
-      console.error("Error ", readableError);
-      toast(readableError + "", {
-        position: "bottom-center",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        newestOnTop: true,
-        type: 'error',
-        theme: 'dark'
-      });
-      showSpinner(false);
+      catch (err) {
+        showSpinner(false);
+        let readableError = err;
+        if (err.message) {
+          readableError = err.message;
+        }
+        readableError = (readableError + "").split("Error: ")[(readableError + "").split("Error: ").length - 1];
+  
+        console.error("Error ", readableError);
+        toast(readableError + "", {
+          position: "bottom-center",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          newestOnTop: true,
+          type: 'error',
+          theme: 'dark'
+        });
+        showSpinner(false);
+      }
     }
   }
 
