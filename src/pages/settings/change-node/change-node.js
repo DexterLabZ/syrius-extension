@@ -155,7 +155,7 @@ const ChangeNode = () => {
           </div>
         </form>
 
-        <div className='mt-2 stick-bottom d-flex'>
+        <div className='mt-2 d-flex'>
           <input className='button primary w-100 d-flex justify-content-center text-white'
             value={"Add node"} type="submit" form="addNodeForm" name="submitButton"></input>
         </div>
