@@ -47,7 +47,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
 
       </div>
       <div className='transaction-data mr-2'>
-        <div className='d-flex justify-content-between mr-2 transaction-data'>
+        <div className='d-flex justify-content-between mr-2 transaction-data text-left'>
           {
             type[0]?.toUpperCase()+type.slice(1, type.length)+" "
           }

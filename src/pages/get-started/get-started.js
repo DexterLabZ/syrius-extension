@@ -229,7 +229,7 @@ const GetStarted = () => {
                 placeholder="Wallet name" value={walletName} onChange={(e) => {setWalletName(e.target.value); setValue('walletNameField', e.target.value, {shouldValidate: true})}} type='text'></input>
 
               <div className={`input-error ${errors.walletNameField?'':'invisible'}`}>
-                { errors.walletNameField?.message || 'Wallet name is required'}
+                { errors.walletNameField?.message || 'Wallet name is required' }
               </div> 
             </div>
             

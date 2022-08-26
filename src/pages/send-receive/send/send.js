@@ -69,7 +69,7 @@ const Send = () => {
         <div>
           <div>Are you sure you want to send</div>
           <div>
-            <b>{sendAmount} {walletInfo.balanceInfoList[selectedToken].token.symbol}</b> 
+            <b>{sendAmount} {walletInfo.balanceInfoList[selectedToken]?.token?.symbol}</b> 
             {" to"}
           </div>         
           <div className='word-break-all'>{recipientAddress} ?</div>
@@ -90,7 +90,7 @@ const Send = () => {
 
   const sendTransaction = async (address, amount)=>{
     const _keyManager = new KeyStoreManager();
-    const actualAmount = parseInt(amount*Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals));
+    const actualAmount = parseInt(amount*Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals));
     const currentKeyPair = await (await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName)).getKeyPair(walletCredentials.selectedAddressIndex).generateKeyPair();
     const showSilentSpinner = handleSilentSpinner(
       <>
@@ -112,7 +112,7 @@ const Send = () => {
       reset();
       showSilentSpinner(false);
       
-      toast(`Successfully sent ${amount} ${walletInfo.balanceInfoList[selectedToken].token.symbol}`, {
+      toast(`Successfully sent ${amount} ${walletInfo.balanceInfoList[selectedToken]?.token?.symbol}`, {
         position: "bottom-center",
         autoClose: 2500,
         hideProgressBar: false,
@@ -192,17 +192,17 @@ const Send = () => {
                     message: 'Minimum of 1'
                   },
                   max: {
-                    value: parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)),
-                    message: 'Maximum of ' + parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals))
+                    value: parseFloat(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals)),
+                    message: 'Maximum of ' + parseFloat(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals))
                   }
                 })} 
                 control={control}
                 className={`w-100 custom-label pr-3 ${errors.sendAmountField?'custom-label-error':''}`}
-                placeholder={walletInfo.balanceInfoList[selectedToken].token.symbol + " amount"} 
+                placeholder={walletInfo.balanceInfoList[selectedToken]?.token?.symbol + " amount"} 
                 value={sendAmount} onChange={(e) => {setSendAmount(e.target.value); setValue('sendAmountField', e.target.value, {shouldValidate: true})}} type='number'></input>
-              <div className={(walletInfo.balanceInfoList[selectedToken].token.symbol==='ZNN'?'primary':'blue') + " input-chip-button"} 
-                onClick={()=>{setSendAmount(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)); setValue('sendAmountField', walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals), { shouldValidate: true })}}>
-                <span>{"MAX: " + parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(0)}</span>
+              <div className={(walletInfo.balanceInfoList[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " input-chip-button"} 
+                onClick={()=>{setSendAmount(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals)); setValue('sendAmountField', walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals), { shouldValidate: true })}}>
+                <span>{"MAX: " + parseFloat(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals)).toFixed(0)}</span>
               </div>
             </div>
 
@@ -225,7 +225,7 @@ const Send = () => {
             <div onClick={() => navigate(-1)} className='button secondary w-100 mr-2 d-flex justify-content-center'>
               Back
             </div>
-            <input className={(walletInfo.balanceInfoList[selectedToken].token.symbol==='ZNN'?'primary':'blue') + " button w-100 d-flex justify-content-center text-white"} 
+            <input className={(walletInfo.balanceInfoList[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " button w-100 d-flex justify-content-center text-white"} 
               value={sendStatus || "Send"} type="submit" name="submitButton"></input>
           </div>
         </form>
