@@ -146,7 +146,7 @@ const InitialNodeSelection = () => {
   }
 
   const validateAddNode = (input) => {
-    if (input.startsWith("ws://")) {
+    if (input.startsWith("ws://") || input.startsWith("wss://")) {
       if (isInNodeList(nodeItems, input)) {
         return "Node already in list"
       } else return true;

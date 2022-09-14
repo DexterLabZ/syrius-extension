@@ -113,7 +113,7 @@ const SiteIntegrationLayout = ()=>{
             data: {
               originalTransaction: integrationState.accountBlockData,
               accountBlock: accountBlockTemplateSend,
-              signedTransaction: signedTransaction
+              signedTransaction: signedTransaction.toJson()
             }
           });
           dispatch(nextIntegrationStep());  

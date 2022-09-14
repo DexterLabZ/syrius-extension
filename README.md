@@ -36,7 +36,7 @@ const listenToExtension = function() {
             const result = JSON.stringify(parsedData.data);
             break;
           }
-          case "znn.znn.accountBlockSent": {
+          case "znn.accountBlockSent": {
             const result = JSON.stringify(parsedData.data);
             break;
           }
@@ -73,7 +73,7 @@ const sendTransactionToSigning = function() {
 const sendAccountBlockToSend = function() {
   window.postMessage({
     method: "znn.sendAccountBlockToSend",
-    params: accountBlockTransactionExample
+    params: accountBlockTransactionExample.toJson()
   }, "*");
 }
 ```
