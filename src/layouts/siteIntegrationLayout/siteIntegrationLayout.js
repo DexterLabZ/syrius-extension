@@ -1,10 +1,11 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nextIntegrationStep } from '../../services/redux/integrationSlice';
 import { KeyStoreManager, Zenon, Primitives } from 'znn-ts-sdk';
 import TransactionItem from '../../components/transaction-item/transaction-item';
 import fallbackValues from '../../services/utils/fallbackValues';
 import { toast } from 'react-toastify';
+import { SpinnerContext } from '../../services/hooks/spinner/spinnerContext';
 
 const SiteIntegrationLayout = ()=>{
   const [address, setAddress] = useState(""); 
@@ -19,6 +20,7 @@ const SiteIntegrationLayout = ()=>{
     balanceInfoList: fallbackValues.availableTokens
   }); 
   const [isFormValid, setIsFormValid] = useState(true);
+  const { handleSpinner } = useContext(SpinnerContext);
 
 
   useEffect(async()=>{
@@ -47,7 +49,16 @@ const SiteIntegrationLayout = ()=>{
       && parseFloat(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance) >= 
       parseFloat(integrationState.transactionData.amount)){
         setIsFormValid(true);
+        const showSpinner = handleSpinner(
+          <>
+            <div className='text-bold'>
+              Sending ...
+            </div>
+          </>
+        );
         try{
+          showSpinner(true);
+      
           const accountBlockTemplateSend = Primitives.AccountBlockTemplate.send(
             Primitives.Address.parse(integrationState.transactionData.to),
             Primitives.TokenStandard.parse(integrationState.transactionData.tokenStandard),
@@ -68,9 +79,11 @@ const SiteIntegrationLayout = ()=>{
               }
             });
             dispatch(nextIntegrationStep());  
+            showSpinner(false);
           }      
         }
         catch(err){
+          showSpinner(false);
           console.error(err);
           let readableError = err;
           if(err.message) {
@@ -98,6 +111,15 @@ const SiteIntegrationLayout = ()=>{
 
   const sendAccountBlock = async()=>{
       setIsFormValid(true);
+      const showSpinner = handleSpinner(
+        <>
+          <div className='text-bold'>
+            Sending ...
+          </div>
+        </>
+      );
+      showSpinner(true);
+      
       try{
         const accountBlockTemplateSend = Primitives.AccountBlockTemplate.fromJson(integrationState.accountBlockData);
         const _keyManager = new KeyStoreManager();        
@@ -117,9 +139,11 @@ const SiteIntegrationLayout = ()=>{
             }
           });
           dispatch(nextIntegrationStep());  
+          showSpinner(false);
         }      
       }
       catch(err){
+        showSpinner(false);
         console.error(err);
         let readableError = err;
         if(err.message) {

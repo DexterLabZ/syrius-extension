@@ -59,6 +59,7 @@ const Dashboard = () => {
         </div>
       </>
     );
+    showSilentSpinner(true);
     
     try{
       const decrypted = await _keyManager.readKeyStore(pass, name);
@@ -68,15 +69,19 @@ const Dashboard = () => {
         const addr = (await currentKeyPair.getAddress()).toString();
         myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 
-        let getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
 
-        if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {
-          getAccountInfoByAddress.balanceInfoList = {...walletInfo.balanceInfoList, ...getAccountInfoByAddress.balanceInfoList}
-          setWalletInfo(getAccountInfoByAddress);
+        const updateAccountInfo = async() => {
+          let getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
+  
+          if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {
+            getAccountInfoByAddress.balanceInfoList = {...walletInfo.balanceInfoList, ...getAccountInfoByAddress.balanceInfoList}
+            setWalletInfo(getAccountInfoByAddress);
+          }
         }
+        await updateAccountInfo();
 
-        showSilentSpinner(true);
-        await receiveAllBlocks(zenon, currentKeyPair).then(()=>{
+        await receiveAllBlocks(zenon, currentKeyPair).then(async()=>{
+          await updateAccountInfo();
           showSilentSpinner(false);
         });
       }

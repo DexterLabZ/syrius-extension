@@ -80,7 +80,7 @@ const ChangeAddress = () => {
     localStorage.setItem("addressInfo", JSON.stringify(addressInfo.current));
 
     toast(`Successfully changed address`, {
-      position: "bottom-center",
+      position: "top-center",
       autoClose: 2500,
       hideProgressBar: false,
       closeOnClick: true,

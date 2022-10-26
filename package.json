@@ -1,6 +1,6 @@
 {
   "name": "syrius-extension",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Syrius extension provides a non-custodial wallet solution for Zenon - Network of Momentum that can run in the browser.",
   "license": "MIT",
   "repository": {
@@ -41,7 +41,7 @@
     "stream-browserify": "^3.0.0",
     "three": "^0.139.2",
     "url-loader": "^4.1.1",
-    "znn-ts-sdk": "dexterlabz/znn.ts"
+    "znn-ts-sdk": "./../znn.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.17.0",

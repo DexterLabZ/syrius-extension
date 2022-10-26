@@ -8,15 +8,15 @@ import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 import { storeNodeUrl } from '../../../services/redux/connectionParametersSlice';
 
 const ChangeNode = () => {
-  const [currentNode, setCurrentNode] = useState();
-  const [nodeToBeAdded, setNodeToBeAdded] = useState();
+  const [currentNode, setCurrentNode] = useState('');
+  const [nodeToBeAdded, setNodeToBeAdded] = useState('');
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
   const zenon = Zenon.getSingleton();
   const { handleSpinner } = useContext(SpinnerContext);
   const connectionParameters = useSelector(state => state.connectionParameters);
   const dispatch = useDispatch();
   let defaultNodes = [
-    "ws://chadasscapital.com:35998",
+    "wss://syrius-testnet.zenon.community",
     "ws://127.0.0.1:35998",
   ]
 
@@ -53,7 +53,7 @@ const ChangeNode = () => {
       dispatch(storeNodeUrl(node));
 
       toast("Updated node url", {
-        position: "bottom-center",
+        position: "top-center",
         autoClose: 2500,
         hideProgressBar: false,
         closeOnClick: true,
@@ -77,7 +77,7 @@ const ChangeNode = () => {
   
         console.error("Error ", readableError);
         toast(readableError + "", {
-          position: "bottom-center",
+          position: "top-center",
           autoClose: 2500,
           hideProgressBar: false,
           closeOnClick: true,
@@ -99,7 +99,7 @@ const ChangeNode = () => {
   
         console.error("Error ", readableError);
         toast(readableError + "", {
-          position: "bottom-center",
+          position: "top-center",
           autoClose: 2500,
           hideProgressBar: false,
           closeOnClick: true,
@@ -168,7 +168,9 @@ const ChangeNode = () => {
                 })}
                 className={`w-100 custom-label pr-3 ${errors.nodeToBeAddedField ? 'custom-label-error' : ''}`}
                 placeholder="Add a node (Ex. ws://192.168.0.0:35998)"
-                value={nodeToBeAdded} onChange={(e) => { setNodeToBeAdded(e.target.value); setValue('nodeToBeAddedField', nodeToBeAdded, { shouldValidate: true }) }} type='text'></input>
+                value={nodeToBeAdded} 
+                onChange={(e) => { setNodeToBeAdded(e.target.value); setValue('nodeToBeAddedField', e.target.value, { shouldValidate: true }) }} 
+                type='text'></input>
 
             </div>
 

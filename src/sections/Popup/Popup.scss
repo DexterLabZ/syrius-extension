@@ -958,6 +958,11 @@ img.button{
   bottom: 0;
 }
 
+.stick-bottom-1em {
+  position: sticky;
+  bottom: 1em;
+}
+
 .stick-bottom {
   position: sticky;
   bottom: 5em;
@@ -1583,6 +1588,13 @@ img.button{
 .Toastify__toast-container {
   max-width: 90% !important;
   left: 5% !important;
+}
+
+.Toastify__toast-container--top-center{
+  top: 1em !important;
+}
+
+.Toastify__toast-container--bottom-center{
   bottom: 1em !important;
 }
 
@@ -1737,4 +1749,11 @@ img.button{
   justify-content: center;
   align-items: flex-start;
   overflow: hidden;
+}
+
+.dead-center{
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
 }

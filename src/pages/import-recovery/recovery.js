@@ -120,9 +120,9 @@ const Recovery = () => {
       return "Invalid wallet name"
     }
   }
-
+  
   const isCorrectMnemonic = (inputMnemonic) =>{
-    if(inputMnemonic.split(" ").length === 24){
+    if(inputMnemonic.split(" ").length === 24 || inputMnemonic.split(" ").length === 12){
       return true;
     }
     return false;
@@ -204,7 +204,7 @@ const Recovery = () => {
       {currentFlowStep === 0 &&
         <div className=''>
           <div className='mt-4 secret-phrase-container'>
-            <textarea placeholder='Type your 24 words seed / recovery phrase' rows='4' className='secret-phrase-text' value={mnemonic} onChange={(e) => setMnemonic(e.target.value)}></textarea>
+            <textarea placeholder='Type your 12 or 24 words seed / recovery phrase' rows='4' className='secret-phrase-text' value={mnemonic} onChange={(e) => setMnemonic(e.target.value)}></textarea>
           </div>
 
           <div className={`mt-2 input-error ${!isCorrectMnemonic(mnemonic)?'':'invisible'}`}>

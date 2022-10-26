@@ -9,16 +9,16 @@ import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 import { storeNodeUrl } from '../../../services/redux/connectionParametersSlice';
 
 const InitialNodeSelection = () => {
-  const [currentNode, setCurrentNode] = useState();
-  const [nodeToBeAdded, setNodeToBeAdded] = useState();
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
+  const [currentNode, setCurrentNode] = useState('');
+  const [nodeToBeAdded, setNodeToBeAdded] = useState('');
+  const { register, handleSubmit, formState: { errors }, reset, setValue, validate } = useForm();
   const zenon = Zenon.getSingleton();
   const { handleSpinner } = useContext(SpinnerContext);
   const connectionParameters = useSelector(state => state.connectionParameters);
   const dispatch = useDispatch();
   let defaultNodes = [
-    "ws://chadasscapital.com:35998",
-    "ws://127.0.0.1:35998",
+    "wss://syrius-testnet.zenon.community",
+    "ws://127.0.0.1:35998"
   ]
   const [nodeItems, setNodeItems] = useState(JSON.parse(localStorage.getItem("nodeList")) || []);
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const InitialNodeSelection = () => {
       dispatch(storeNodeUrl(node));
 
       toast("Updated node url", {
-        position: "bottom-center",
+        position: "top-center",
         autoClose: 2500,
         hideProgressBar: false,
         closeOnClick: true,
@@ -78,7 +78,7 @@ const InitialNodeSelection = () => {
   
         console.error("Error ", readableError);
         toast(readableError + "", {
-          position: "bottom-center",
+          position: "top-center",
           autoClose: 2500,
           hideProgressBar: false,
           closeOnClick: true,
@@ -100,7 +100,7 @@ const InitialNodeSelection = () => {
   
         console.error("Error ", readableError);
         toast(readableError + "", {
-          position: "bottom-center",
+          position: "top-center",
           autoClose: 2500,
           hideProgressBar: false,
           closeOnClick: true,
@@ -175,7 +175,10 @@ const InitialNodeSelection = () => {
                 })}
                 className={`w-100 custom-label pr-3 ${errors.nodeToBeAddedField ? 'custom-label-error' : ''}`}
                 placeholder="Add a node (Ex. ws://192.168.0.0:35998)"
-                value={nodeToBeAdded} onChange={(e) => { setNodeToBeAdded(e.target.value); setValue('nodeToBeAddedField', nodeToBeAdded, { shouldValidate: true }) }} type='text'></input>
+                value={nodeToBeAdded} 
+                onChange={(e) => { setNodeToBeAdded(e.target.value); setValue('nodeToBeAddedField', e.target.value, { shouldValidate: true }) }} 
+                // onPaste={(e) => { console.log("A", e.clipboardData.getData('text')); setValue('nodeToBeAddedField', e.clipboardData.getData('text'), { shouldValidate: true }) }} 
+                type='text'></input>
 
             </div>
 
@@ -190,7 +193,7 @@ const InitialNodeSelection = () => {
             value={"Add node"} type="submit" form="addNodeForm" name="submitButton"></input>
         </div>
 
-        <div className='button primary mt-2' onClick={() => saveNode(false)}>Save</div>
+        <div className='button primary mt-2 stick-bottom-1em' onClick={() => saveNode(false)}>Save</div>
 
       </div>
     </div>
