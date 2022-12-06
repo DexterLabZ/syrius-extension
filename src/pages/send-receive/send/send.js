@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { KeyStoreManager, Zenon, Primitives } from 'znn-ts-sdk';
+import { KeyStoreManager, Zenon, Primitives, Enums } from 'znn-ts-sdk';
 import fallbackValues from '../../../services/utils/fallbackValues';
 import { useSelector } from 'react-redux';
 import { ModalContext } from '../../../services/hooks/modal/modalContext';
@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { toast } from 'react-toastify';
 import ControlledDropdown from '../../../components/custom-dropdown/controlled-dropdown';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext';
+import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 
 const Send = () => {
   const location = useLocation();
@@ -19,7 +20,7 @@ const Send = () => {
   const [recipientAddress , setRecipientAddress] = useState(""); 
   const [sendAmount , setSendAmount] = useState(""); 
   const [sendStatus , setSendStatus] = useState(""); 
-  const [selectedToken, setSelectedToken] = useState(location.state?.currentSelectedToken || availableTokens[0]); 
+  const [selectedToken, setSelectedToken] = useState(availableTokens[0]); 
   const [walletInfo, setWalletInfo] = useState({
     balanceInfoList: fallbackValues.availableTokens
   }); 
@@ -32,6 +33,13 @@ const Send = () => {
 
   useEffect(() => {
     getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+    if(location.state?.currentSelectedToken){
+      setSelectedToken(location.state?.currentSelectedToken);
+      setValue('selectedTokenField', location.state?.currentSelectedToken, {shouldValidate: true});
+    }else{
+      setSelectedToken(availableTokens[0]);
+      setValue('selectedTokenField', availableTokens[0], {shouldValidate: true});
+    }
   }, []);
 
   const getWalletInfo = async (pass, name)=>{
@@ -105,7 +113,41 @@ const Send = () => {
       const zenon = Zenon.getSingleton();
       setSendStatus("Sending...");
       const AccountBlockTemplateSend = Primitives.AccountBlockTemplate.send(Primitives.Address.parse(address), Primitives.TokenStandard.parse(walletInfo.balanceInfoList[selectedToken].token.tokenStandard), actualAmount);
-      await zenon.send(AccountBlockTemplateSend, currentKeyPair);
+      
+      const showPoWSpinner = handleSilentSpinner(
+        <>
+          <div className='text-bold'>
+            Sending ...
+          </div>
+          <div className='text-bold'>
+            Generating Plasma ...
+          </div>
+        </>
+      );
+      const generatingPowCallback = (powStatus)=>{
+         console.log("generatingPowCallback", powStatus);
+        if(powStatus === Enums.PowStatus.generating){
+          showSilentSpinner(false);
+          showPoWSpinner(true);
+        }
+        if(powStatus === Enums.PowStatus.done){
+          showPoWSpinner(false);
+          showSilentSpinner(true);
+          toast(`Finished generating plasma`, {
+            position: "bottom-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            newestOnTop: true,
+            type: 'success',
+            theme: 'dark'
+          });    
+        }
+      }
+
+      await zenon.send(AccountBlockTemplateSend, currentKeyPair, generatingPowCallback);
       setSendAmount(0);
       setRecipientAddress("");
       setSendStatus("Sent !");
@@ -158,12 +200,12 @@ const Send = () => {
 
   const onSelectToken = (index, value) => {
     setSelectedToken(value.token.tokenStandard);
+    setValue('selectedTokenField', value.token.tokenStandard, {shouldValidate: true});
   }
 
   return (
     <div className='black-bg'>
       <h1 className='mt-1'>Send</h1>
-      
       <div className='mt-2 ml-2 mr-2'>
         <form onSubmit={handleSubmit(()=>openConfirmModal(recipientAddress, sendAmount))}>
           <div className='custom-control'>  

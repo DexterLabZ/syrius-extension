@@ -19,6 +19,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       currentIntegrationFlow: "walletAccess"
     }
     sendResponse("Extension opened !");
+    return true;
   }
 
   if (request.message === 'znn.sendTransactionToSigning') {
@@ -30,6 +31,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       transactionData: request.params
     }
     sendResponse("Extension opened !");
+    return true;
   }
 
   if (request.message === 'znn.sendAccountBlockToSend') {
@@ -41,6 +43,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       accountBlockData: request.params
     }
     sendResponse("Extension opened !");
+    return true;
   }
 
   // 
@@ -54,6 +57,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }, function(response) {
       // console.log("Response at znn.grantedWalletRead:", response)
     });    
+    return true;
+  }
+
+  if (request.message === 'znn.deniedWalletRead') {
+    // console.log("Got message from popup (siteIntegrationLayout.js)", request.data);
+    chrome.tabs.sendMessage(siteTabId, {
+      message: "znn.deniedWalletRead", 
+      error: request.error,
+      data: request.data
+    }, function(response) {
+      // console.log("Response at znn.deniedWalletRead:", response)
+    });    
+    return true;
   }
 
   if (request.message === 'znn.signedTransaction') {
@@ -64,7 +80,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }, function(response) {
       // console.log("Response at znn.signedTransaction: ", response)
     });    
+    return true;
   }
+  
+  if (request.message === 'znn.deniedSignTransaction') {
+    // console.log("Got message from popup (siteIntegrationLayout.js)", siteTabId, request.data);
+    chrome.tabs.sendMessage(siteTabId, {
+      message: "znn.deniedSignTransaction", 
+      error: request.error,
+      data: request.data
+    }, function(response) {
+      // console.log("Response at znn.deniedSignTransaction: ", response)
+    });    
+    return true;
+  }
+
 
   if (request.message === 'znn.accountBlockSent') {
     // console.log("Got message from popup (siteIntegrationLayout.js)", siteTabId, request.data);
@@ -74,7 +104,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }, function(response) {
       // console.log("Response at znn.accountBlockSent: ", response)
     });    
+    return true;
   }
+
+  if (request.message === 'znn.deniedSendAccountBlock') {
+    // console.log("Got message from popup (siteIntegrationLayout.js)", siteTabId, request.data);
+    chrome.tabs.sendMessage(siteTabId, {
+      message: "znn.deniedSendAccountBlock", 
+      error: request.error,
+      data: request.data
+    }, function(response) {
+      // console.log("Response at znn.deniedSendAccountBlock: ", response)
+    });    
+    return true;
+  }
+
 
   // 
   // Used for wallet credentials temporary/"session" storage
@@ -92,6 +136,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }else{
       sendResponse(false);
     }
+    return true;
   }
 
   if (request.message === 'internal.storeCredentialsToBackgroundScript') {
@@ -101,11 +146,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       walletCredentials.password = request.data.password;
       walletCredentials.timestamp = new Date();
     }
+    return true;
   }
 
   if (request.message === 'internal.clearCredentialsOfBackgroundScript') {
     // console.log("internal.clearCredentialsOfBackgroundScript", request, walletCredentials);
     resetCredentials();
+    return true;
   }
 
   return true;

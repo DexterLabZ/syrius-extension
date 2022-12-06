@@ -80,10 +80,10 @@ const Dashboard = () => {
         }
         await updateAccountInfo();
 
-        await receiveAllBlocks(zenon, currentKeyPair).then(async()=>{
-          await updateAccountInfo();
-          showSilentSpinner(false);
-        });
+        await receiveAllBlocks(zenon, currentKeyPair);
+        // console.log("receiveAllBlocks", )
+        await updateAccountInfo();
+        showSilentSpinner(false);
       }
       else{
         console.error("Error decrypting");
@@ -101,13 +101,16 @@ const Dashboard = () => {
         const getBlocksByPage = await zenon.ledger.getBlocksByPage(myAddressObject.current, currentTransactionsPage.current, pageSize);         
           if(getBlocksByPage.list.length > 0){
             transactionsCount.current += getBlocksByPage.list.length;
+            // console.log("getBlocksByPage.list", getBlocksByPage.list);
             let newTransactions = getBlocksByPage.list;
             newTransactions = await Promise.all(newTransactions.map(async (transaction) => {
               return await transformTransactionItem(transaction);
             }));          
-
+            // console.log("newTransactions", newTransactions);
             setTransactions(prevTransactions => {
+              // console.log("prevTransactions", prevTransactions);
               transactions = [...prevTransactions, ...newTransactions];
+              // console.log("transactions", transactions);
               return transactions
             });
             currentTransactionsPage.current = currentTransactionsPage.current + 1;
@@ -232,7 +235,17 @@ const Dashboard = () => {
             <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(3)}</span>
           </h2>
           <h4 className='mb-0 mt-1 text-gray'>{walletInfo.balanceInfoList[selectedToken].token.symbol}</h4>
-          <h4 className='m-0 text-gray tooltip'>
+          <h4 className='m-0 text-gray tooltip cursor-pointer' onClick={() => {try{navigator.clipboard.writeText(address); toast(`Address copied`, {
+                position: "bottom-center",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                newestOnTop: true,
+                type: 'success',
+                theme: 'dark'
+              })}catch(err){console.error(err)} }}>
             {address.slice(0, 3) + '...' + address.slice(-3)}
             <span className='tooltip-text'>{address}</span>
           </h4>

@@ -6,6 +6,7 @@ import TransactionItem from '../../components/transaction-item/transaction-item'
 import fallbackValues from '../../services/utils/fallbackValues';
 import { toast } from 'react-toastify';
 import { SpinnerContext } from '../../services/hooks/spinner/spinnerContext';
+import { Enums, utils } from "znn-ts-sdk";
 
 const SiteIntegrationLayout = ()=>{
   const [address, setAddress] = useState(""); 
@@ -20,16 +21,52 @@ const SiteIntegrationLayout = ()=>{
     balanceInfoList: fallbackValues.availableTokens
   }); 
   const [isFormValid, setIsFormValid] = useState(true);
+  const [displayedBlock, setDisplayedBlock] = useState({});
   const { handleSpinner } = useContext(SpinnerContext);
 
 
-  useEffect(async()=>{
-    await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
+  useEffect(()=>{
+    async function fetchData() {
+      await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);
 
-    if(integrationState.currentIntegrationStep === "opening"){
-      dispatch(nextIntegrationStep());
+      if(integrationState.currentIntegrationFlow === 'accountBlockSending' ){
+        const filledBlock = await setSendingBlockFields();
+        setDisplayedBlock(filledBlock.toJson());
+      }
+
+      if(integrationState.currentIntegrationFlow === 'transactionSigning' ){
+        const filledBlock = await setSigningBlockFields();
+        setDisplayedBlock(filledBlock.toJson());
+      }
+
+      if(integrationState.currentIntegrationStep === "opening"){
+        dispatch(nextIntegrationStep());
+      }
     }
+    fetchData();  
   }, []);
+
+  const setSendingBlockFields = async() => {
+    const _keyManager = new KeyStoreManager();          
+    const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
+    const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
+    const transaction = Primitives.AccountBlockTemplate.fromJson(integrationState.accountBlockData);    
+
+    return utils.BlockUtils._checkAndSetFields(zenon, transaction, currentKeyPair)
+  }
+
+  const setSigningBlockFields = async() => {
+    const _keyManager = new KeyStoreManager();          
+    const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
+    const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
+    const transaction = Primitives.AccountBlockTemplate.send(
+      Primitives.Address.parse(integrationState.transactionData.to),
+      Primitives.TokenStandard.parse(integrationState.transactionData.tokenStandard),
+      parseFloat(integrationState.transactionData.amount));      
+
+    return utils.BlockUtils._checkAndSetFields(zenon, transaction, currentKeyPair)
+  }
+
   
   const getAddress = async()=>{
     await getWalletInfo(walletCredentials.walletPassword, walletCredentials.walletName);    
@@ -43,6 +80,15 @@ const SiteIntegrationLayout = ()=>{
     });
     dispatch(nextIntegrationStep());
   }
+
+  const denyWalletRead = async () => {
+    chrome.runtime.sendMessage({
+      message: "znn.deniedWalletRead", 
+      error: "User denied wallet read",
+      data: {}
+    });
+    window.close();
+  } 
 
   const signTransaction = async()=>{
     if(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance
@@ -68,7 +114,29 @@ const SiteIntegrationLayout = ()=>{
           const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
           if(decrypted){
             const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
-            const signedTransaction = await zenon.send(accountBlockTemplateSend, currentKeyPair);
+
+            const showPoWSpinner = handleSpinner(
+              <>
+                <div className='text-bold'>
+                  Sending ...
+                </div>
+                <div className='text-bold'>
+                  Generating Plasma ...
+                </div>
+              </>
+            );
+            const generatingPowCallback = (powStatus)=>{
+              if(powStatus === Enums.PowStatus.generating){
+                showSpinner(false);
+                showPoWSpinner(true);
+              }
+              if(powStatus === Enums.PowStatus.done){
+                showPoWSpinner(false);
+                showSpinner(true);
+              }
+            }
+  
+            const signedTransaction = await zenon.send(accountBlockTemplateSend, currentKeyPair, generatingPowCallback);
             setSignedHash(signedTransaction.hash.toString());      
             chrome.runtime.sendMessage({
               message: "znn.signedTransaction", 
@@ -109,6 +177,15 @@ const SiteIntegrationLayout = ()=>{
       }
   }
 
+  const denySignTransaction = async () => {
+    chrome.runtime.sendMessage({
+      message: "znn.deniedSignTransaction", 
+      error: "User denied transaction signing",
+      data: {}
+    });
+    window.close();
+  } 
+
   const sendAccountBlock = async()=>{
       setIsFormValid(true);
       const showSpinner = handleSpinner(
@@ -127,7 +204,32 @@ const SiteIntegrationLayout = ()=>{
         
         if(decrypted){
           const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
-          const signedTransaction = await zenon.send(accountBlockTemplateSend, currentKeyPair);
+
+          const showPoWSpinner = handleSpinner(
+            <>
+              <div className='text-bold'>
+                Sending ...
+              </div>
+              <div className='text-bold'>
+                Generating Plasma ...
+              </div>
+            </>
+          );
+          const generatingPowCallback = (powStatus)=>{
+            if(powStatus === Enums.PowStatus.generating){
+              showSpinner(false);
+              showPoWSpinner(true);
+            }
+            if(powStatus === Enums.PowStatus.done){
+              showPoWSpinner(false);
+              showSpinner(true);
+            }
+          }
+
+          const completedBlock = await utils.BlockUtils._checkAndSetFields(zenon, accountBlockTemplateSend, currentKeyPair)
+          console.log("completedBlock", completedBlock);
+
+          const signedTransaction = await zenon.send(accountBlockTemplateSend, currentKeyPair, generatingPowCallback);
           setSignedHash(signedTransaction.hash.toString());
     
           chrome.runtime.sendMessage({
@@ -164,6 +266,15 @@ const SiteIntegrationLayout = ()=>{
         });
       }
   }
+
+  const denySendAccountBlock = async () => {
+    chrome.runtime.sendMessage({
+      message: "znn.deniedSendAccountBlock", 
+      error: "User denied sending account block",
+      data: {}
+    });
+    window.close();
+  } 
 
   const getWalletInfo = async (pass, name)=>{
     const _keyManager = new KeyStoreManager();
@@ -238,7 +349,7 @@ const SiteIntegrationLayout = ()=>{
 
                     <h3 className="mt-4">Do you grant this website permission to read your <b>Address</b>, <b>Chain Identifier</b> and <b>Node URL</b> ?</h3>
                     <div className='d-flex w-100 justify-content-around mt-4'>
-                      <div onClick={()=>{window.close()}} className='button secondary pl-5 pr-5'>No</div>
+                      <div onClick={()=>{denyWalletRead()}} className='button secondary pl-5 pr-5'>No</div>
                       <div onClick={()=>{getAddress()}} className={`button primary pl-5 pr-5 ${isFormValid?'':'disabled'}`}>Yes</div>
                     </div>
                     <h5 className='text-gray mt-4 d-flex'>
@@ -307,11 +418,11 @@ const SiteIntegrationLayout = ()=>{
                     </div>
                     <div className="mt-4 mr-2 ml-2">
                       <h3>Do you want to make this transaction ?</h3>
-                      <TransactionItem displayFullAddress={true} type="send" amount={parseFloat(integrationState.transactionData.amount/Math.pow(10, walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)).toFixed(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)}
+                      <TransactionItem displayFullAddress={false} type="send" amount={parseFloat(integrationState.transactionData.amount/Math.pow(10, walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals))}
                       tokenSymbol={walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.symbol} address={integrationState.transactionData.to}></TransactionItem>
 
                       <div className='d-flex mt-4 w-100 justify-content-around'>
-                        <div onClick={()=>{window.close()}} className='button secondary pl-5 pr-5'>No</div>
+                        <div onClick={()=>{denySignTransaction()}} className='button secondary pl-5 pr-5'>No</div>
                         <div onClick={()=>{signTransaction()}} className={`button primary pl-5 pr-5 ${isFormValid?'':'disabled'}`}>Yes</div>
                       </div>
 
@@ -368,11 +479,11 @@ const SiteIntegrationLayout = ()=>{
                     <div className="mt-4 mr-2 ml-2 max-w-100vw">
                       <h3>Do you want to send this account block ?</h3>
                       <pre style={{maxHeight: '220px', overflow: 'scroll', textAlign: 'left'}}>
-                        {JSON.stringify(integrationState.accountBlockData, undefined, 2)}
+                        {JSON.stringify(displayedBlock, undefined, 2)}
                       </pre>
 
                       <div className='d-flex mt-4 w-100 justify-content-around max-w-100vw'>
-                        <div onClick={()=>{window.close()}} className='button secondary pl-5 pr-5'>No</div>
+                        <div onClick={()=>{denySendAccountBlock()}} className='button secondary pl-5 pr-5'>No</div>
                         <div onClick={()=>{sendAccountBlock()}} className={`button primary pl-5 pr-5 ${isFormValid?'':'disabled'}`}>Yes</div>
                       </div>
 

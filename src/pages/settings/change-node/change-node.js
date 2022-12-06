@@ -53,7 +53,7 @@ const ChangeNode = () => {
       dispatch(storeNodeUrl(node));
 
       toast("Updated node url", {
-        position: "top-center",
+        position: "bottom-center",
         autoClose: 2500,
         hideProgressBar: false,
         closeOnClick: true,

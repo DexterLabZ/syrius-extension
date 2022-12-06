@@ -1111,6 +1111,7 @@ img.button{
 .transaction-icon {
   border-radius: 100%;
   width: 30px;
+  min-width: 30px;
   height: 30px;
   background: #2F2F2F;
   padding: 0.2em;
@@ -1601,6 +1602,7 @@ img.button{
 .Toastify__toast {
   margin-bottom: 0.5em !important;
   border-radius: 6px !important;
+  user-select: none;
 }
 
 .styled-list{
