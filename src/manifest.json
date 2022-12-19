@@ -1,5 +1,5 @@
 {
-  "version": "0.1.4",
+  "version": "0.1.5",
   "manifest_version": 2,
   "name": "ZNN TestNet Syrius Extension",
   "description": "Syrius TestNet extension provides a non-custodial wallet solution for Zenon - Network of Momentum that can run in the browser",
