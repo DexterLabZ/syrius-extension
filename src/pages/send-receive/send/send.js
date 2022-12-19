@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import ControlledDropdown from '../../../components/custom-dropdown/controlled-dropdown';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext';
 import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
+import { ethers } from 'ethers';
 
 const Send = () => {
   const location = useLocation();
@@ -234,8 +235,9 @@ const Send = () => {
                     message: 'Minimum of 1'
                   },
                   max: {
-                    value: parseFloat(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals)),
-                    message: 'Maximum of ' + parseFloat(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals))
+                    value: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))),
+                    // value: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))),
+                    message: 'Maximum of ' + parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+'')))
                   }
                 })} 
                 control={control}
@@ -243,8 +245,8 @@ const Send = () => {
                 placeholder={walletInfo.balanceInfoList[selectedToken]?.token?.symbol + " amount"} 
                 value={sendAmount} onChange={(e) => {setSendAmount(e.target.value); setValue('sendAmountField', e.target.value, {shouldValidate: true})}} type='number'></input>
               <div className={(walletInfo.balanceInfoList[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " input-chip-button"} 
-                onClick={()=>{setSendAmount(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals)); setValue('sendAmountField', walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals), { shouldValidate: true })}}>
-                <span>{"MAX: " + parseFloat(walletInfo.balanceInfoList[selectedToken]?.balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals)).toFixed(0)}</span>
+                onClick={()=>{setSendAmount(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+'')), { shouldValidate: true })}}>
+                <span>{"MAX: " + parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))).toFixed(0)}</span>
               </div>
             </div>
 

@@ -10,6 +10,7 @@ import animationVariants from '../../../layouts/tabsLayout/animationVariants';
 import { useSelector } from 'react-redux';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext'
 import { toast } from 'react-toastify';
+import { ethers } from 'ethers';
 
 const Dashboard = () => {
   const availableTokens = Object.keys(fallbackValues.availableTokens);
@@ -151,13 +152,15 @@ const Dashboard = () => {
   }
 
   const transformTransactionItem = async (transactionItem) =>{
+    console.log("transactionItem", transactionItem);
     if(transactionItem.blockType===3){
       transactionItem = await getReferencedTransaction(transactionItem)
     }
     
     const transformedTransaction = {
       type: identifyTransactionType(transactionItem),
-      amount: transactionItem.amount / Math.pow(10, transactionItem.token?.decimals || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals),
+      amount: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(transactionItem.amount.toString() || 0), ethers.BigNumber.from(((transactionItem.token?.decimals || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))),
+      // amount: transactionItem.amount / Math.pow(10, transactionItem.token?.decimals || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals),
       tokenSymbol: transactionItem.token?.symbol || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.symbol || "?",
       address: transactionItem.toAddress.toString(),
       hash: transactionItem.hash.toString()
@@ -231,8 +234,13 @@ const Dashboard = () => {
       <div className='mt-2 ml-2 mr-2 d-flex justify-content-center'>
         <div className={`wallet-circle circle-${tokenColor}`}>
           <h2 className='mb-0 tooltip'>
-            {parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(0)}
-            <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(3)}</span>
+            {/* {parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(0)}
+            <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(3)}</span> */}
+          {
+            parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))).toFixed(0)
+          }
+          <span className='tooltip-text mt-2'>{parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))).toFixed(3)}</span>
+
           </h2>
           <h4 className='mb-0 mt-1 text-gray'>{walletInfo.balanceInfoList[selectedToken].token.symbol}</h4>
           <h4 className='m-0 text-gray tooltip cursor-pointer' onClick={() => {try{navigator.clipboard.writeText(address); toast(`Address copied`, {

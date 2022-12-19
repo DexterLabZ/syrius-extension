@@ -46,7 +46,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
         }
 
       </div>
-      <div className='transaction-data mr-2'>
+      <div className='transaction-data'>
         <div className='d-flex justify-content-between mr-2 transaction-data text-left'>
           <div className='d-flex' style={{gap: '0.3rem'}}>
             <span className=''>
@@ -55,7 +55,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
               }
             </span>
             <span className='tooltip'>
-              {amount.toFixed(1)}
+              {amount.toFixed(0)}
               <span className="tooltip-text text-xs mt-5">{amount.toFixed(3)}</span>
             </span> 
             <span>
@@ -96,7 +96,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
         </div>
 
       </div>
-        <a href={'https://explorer.zenon.org/transaction/' + hash} target="_blank">
+        <a href={'https://explorer.zenon.org/transaction/' + hash} target="_blank" rel="noreferrer">
           <div className='tooltip'>
             <div className='squared-button animate-on-hover'>
               <ExternalLinkIcon></ExternalLinkIcon>
