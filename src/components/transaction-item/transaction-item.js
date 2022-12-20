@@ -96,7 +96,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
         </div>
 
       </div>
-        <a href={'https://explorer.zenon.org/transaction/' + hash} target="_blank" rel="noreferrer">
+        <a href={'https://explorer.zenon.network/transaction/' + hash} target="_blank" rel="noreferrer">
           <div className='tooltip'>
             <div className='squared-button animate-on-hover'>
               <ExternalLinkIcon></ExternalLinkIcon>
