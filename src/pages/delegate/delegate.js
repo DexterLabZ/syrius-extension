@@ -83,7 +83,7 @@ const Delegate = () => {
       name: pillarItem.name,
       giveDelegateRewardPercentage: pillarItem.giveDelegateRewardPercentage,
       giveMomentumRewardPercentage: pillarItem.giveMomentumRewardPercentage,
-      weight: pillarItem.weight,
+      weight: pillarItem.weight.toString(),
       producedMomentums: pillarItem.currentStats.producedMomentums,
       expectedMomentums: pillarItem.currentStats.expectedMomentums,
       producerAddress: pillarItem.producerAddress.toString(),
@@ -96,11 +96,13 @@ const Delegate = () => {
   const loadPillars = async() =>{
     if(shouldLoadMore){           
       const getAll = await zenon.embedded.pillar.getAll(currentPillarsPage.current, pageSize);
-
+      console.log("getAll", getAll);
       if(getAll.list.length > 0){
         const newPillarItems = getAll.list.map((pillarItem)=>{
           return transformPillarItem(pillarItem);
         });
+        console.log("newPillarItems", newPillarItems);
+
         setPillarItems(pillars => {
           pillarItems = [...pillars, ...newPillarItems];
           return pillarItems;

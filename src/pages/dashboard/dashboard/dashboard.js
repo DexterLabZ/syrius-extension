@@ -10,6 +10,7 @@ import animationVariants from '../../../layouts/tabsLayout/animationVariants';
 import { useSelector } from 'react-redux';
 import { SilentSpinnerContext } from '../../../services/hooks/silent-spinner/silentSpinnerContext'
 import { toast } from 'react-toastify';
+import { ethers } from 'ethers';
 
 const Dashboard = () => {
   const availableTokens = Object.keys(fallbackValues.availableTokens);
@@ -19,7 +20,7 @@ const Dashboard = () => {
   let [transactions, setTransactions] = useState([]); 
   const [selectedToken, setSelectedToken] = useState(availableTokens[0]); 
   const [walletInfo, setWalletInfo] = useState({
-    balanceInfoList: fallbackValues.availableTokens
+    balanceInfoMap: fallbackValues.availableTokens
   }); 
   const transactionsCount = useRef(0); 
   const currentTransactionsPage = useRef(0); 
@@ -59,6 +60,7 @@ const Dashboard = () => {
         </div>
       </>
     );
+    showSilentSpinner(true);
     
     try{
       const decrypted = await _keyManager.readKeyStore(pass, name);
@@ -68,17 +70,21 @@ const Dashboard = () => {
         const addr = (await currentKeyPair.getAddress()).toString();
         myAddressObject.current = Primitives.Address.parse(addr);
         setAddress(addr); 
-        let getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
 
-        if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {
-          getAccountInfoByAddress.balanceInfoList = {...walletInfo.balanceInfoList, ...getAccountInfoByAddress.balanceInfoList}
-          setWalletInfo(getAccountInfoByAddress);
+        const updateAccountInfo = async() => {
+          let getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
+          console.log("getAccountInfoByAddress", getAccountInfoByAddress);
+          if(Object.keys(getAccountInfoByAddress.balanceInfoMap).length) {
+            getAccountInfoByAddress.balanceInfoMap = {...walletInfo.balanceInfoMap, ...getAccountInfoByAddress.balanceInfoMap}
+            setWalletInfo(getAccountInfoByAddress);
+          }
         }
+        await updateAccountInfo();
 
-        showSilentSpinner(true);
-        await receiveAllBlocks(zenon, currentKeyPair).then(()=>{
-          showSilentSpinner(false);
-        });
+        await receiveAllBlocks(zenon, currentKeyPair);
+        // console.log("receiveAllBlocks", )
+        await updateAccountInfo();
+        showSilentSpinner(false);
       }
       else{
         console.error("Error decrypting");
@@ -94,15 +100,19 @@ const Dashboard = () => {
     try{
       if(shouldLoadMore){
         const getBlocksByPage = await zenon.ledger.getBlocksByPage(myAddressObject.current, currentTransactionsPage.current, pageSize);         
+          console.log("getBlocksByPage - page", currentTransactionsPage.current, getBlocksByPage)
           if(getBlocksByPage.list.length > 0){
             transactionsCount.current += getBlocksByPage.list.length;
+            console.log("getBlocksByPage", getBlocksByPage);
             let newTransactions = getBlocksByPage.list;
             newTransactions = await Promise.all(newTransactions.map(async (transaction) => {
-              return await transformTransactionItem(transaction);
+              return await transformTransactionItem(transaction.toJson());
             }));          
-
+            console.log("newTransactions", newTransactions);
             setTransactions(prevTransactions => {
+              // console.log("prevTransactions", prevTransactions);
               transactions = [...prevTransactions, ...newTransactions];
+              // console.log("transactions", transactions);
               return transactions
             });
             currentTransactionsPage.current = currentTransactionsPage.current + 1;
@@ -143,16 +153,24 @@ const Dashboard = () => {
   }
 
   const transformTransactionItem = async (transactionItem) =>{
-    if(transactionItem.blockType===3){
-      transactionItem = await getReferencedTransaction(transactionItem)
+    console.log("transactionItem", transactionItem);
+    let transaction;
+    if(transactionItem.blockType === 3 || transactionItem.blockType === '3'){
+      transaction = await getReferencedTransaction(transactionItem);
+      console.log("transaction", transaction);
+    }else{
+      transaction = transactionItem;
     }
     
+    console.log("ethers.utils.formatUnits(ethers.BigNumber.from(transaction.amount.toString() || 0), ethers.BigNumber.from(((transaction.token?.decimals || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))", ethers.utils.formatUnits(ethers.BigNumber.from(transaction.amount.toString() || 0), ethers.BigNumber.from(((transaction.token?.decimals || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals).toString() || 8)+'')));
+    console.log("parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(transaction.amount.toString() || 0), ethers.BigNumber.from(((transaction.token?.decimals || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals).toString() || 8)+'')))", parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(transaction.amount.toString() || 0), ethers.BigNumber.from(((transaction.token?.decimals || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))));
     const transformedTransaction = {
-      type: identifyTransactionType(transactionItem),
-      amount: transactionItem.amount / Math.pow(10, transactionItem.token?.decimals || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals),
-      tokenSymbol: transactionItem.token?.symbol || fallbackValues.availableTokens[transactionItem.tokenStandard?.toString()]?.token.symbol || "?",
-      address: transactionItem.toAddress.toString(),
-      hash: transactionItem.hash.toString()
+      type: identifyTransactionType(transaction),
+      amount: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(transaction.amount.toString() || 0), ethers.BigNumber.from(((transaction.token?.decimals || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))),
+      // amount: transaction.amount / Math.pow(10, transaction.token?.decimals || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.decimals || fallbackValues.decimals),
+      tokenSymbol: transaction.token?.symbol || fallbackValues.availableTokens[transaction.tokenStandard?.toString()]?.token.symbol || "?",
+      address: transaction.toAddress.toString(),
+      hash: transaction.hash.toString()
     }
 
     switch(transformedTransaction.type){
@@ -183,7 +201,7 @@ const Dashboard = () => {
   }
 
   const getReferencedTransaction = async (transactionItem)=>{
-    return zenon.ledger.getBlockByHash(transactionItem.fromBlockHash);
+    return (await zenon.ledger.getBlockByHash(transactionItem.fromBlockHash)).toJson();
   }
 
   const goToSend = () => {
@@ -223,11 +241,26 @@ const Dashboard = () => {
       <div className='mt-2 ml-2 mr-2 d-flex justify-content-center'>
         <div className={`wallet-circle circle-${tokenColor}`}>
           <h2 className='mb-0 tooltip'>
-            {parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(0)}
-            <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoList[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoList[selectedToken].token.decimals)).toFixed(3)}</span>
+            {/* {parseFloat(walletInfo.balanceInfoMap[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoMap[selectedToken].token.decimals)).toFixed(0)}
+            <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoMap[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoMap[selectedToken].token.decimals)).toFixed(3)}</span> */}
+          {
+            parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))).toFixed(0)
+          }
+          <span className='tooltip-text mt-2'>{parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))).toFixed(3)}</span>
+
           </h2>
-          <h4 className='mb-0 mt-1 text-gray'>{walletInfo.balanceInfoList[selectedToken].token.symbol}</h4>
-          <h4 className='m-0 text-gray tooltip'>
+          <h4 className='mb-0 mt-1 text-gray'>{walletInfo.balanceInfoMap[selectedToken].token.symbol}</h4>
+          <h4 className='m-0 text-gray tooltip cursor-pointer' onClick={() => {try{navigator.clipboard.writeText(address); toast(`Address copied`, {
+                position: "bottom-center",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                newestOnTop: true,
+                type: 'success',
+                theme: 'dark'
+              })}catch(err){console.error(err)} }}>
             {address.slice(0, 3) + '...' + address.slice(-3)}
             <span className='tooltip-text'>{address}</span>
           </h4>
@@ -236,7 +269,7 @@ const Dashboard = () => {
       </div>
       
       <div className='mt-2 ml-2 mr-2 d-flex justify-content-center'>
-        <TokenDropdown options={Object.keys(walletInfo.balanceInfoList).map((value)=>{return walletInfo.balanceInfoList[value]})} tokenSymbolPath={`token.symbol`} onChange={selectToken} value={selectedToken} placeholder="Select token" />
+        <TokenDropdown options={Object.keys(walletInfo.balanceInfoMap).map((value)=>{return walletInfo.balanceInfoMap[value]})} tokenSymbolPath={`token.symbol`} onChange={selectToken} value={selectedToken} placeholder="Select token" />
       </div>
 
       <div className='mt-2 ml-2 mr-2 d-flex'>

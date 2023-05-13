@@ -1,31 +1,67 @@
 
-// console.log('Content script works!');
+console.log('Content script works!');
+
+var elt = document.createElement("script");
+elt.innerHTML = `
+  window.zenon = {};
+  window.zenon.isSyriusExtension = true;
+`;
+document.head.appendChild(elt);
+
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message === 'znn.grantedWalletRead') {
-    // console.log("Got message from background.js", request.data);
     window.postMessage({
       method: "znn.grantedWalletRead",
       data: request.data
     }, "*");
+    return true;
+  }
+
+  if (request.message === 'znn.deniedWalletRead') {
+    window.postMessage({
+      method: "znn.deniedWalletRead",
+      error: request.error,
+      data: request.data
+    }, "*");
+    return true;
   }
 
   if (request.message === 'znn.signedTransaction') {
-    // console.log("Got message from background.js", request.data);
     window.postMessage({
       method: "znn.signedTransaction",
       data: request.data
     }, "*");
+    return true;
+  }
+
+  if (request.message === 'znn.deniedSignTransaction') {
+    window.postMessage({
+      method: "znn.deniedSignTransaction",
+      error: request.error,
+      data: request.data
+    }, "*");
+    return true;
   }
 
   if (request.message === 'znn.accountBlockSent') {
-    // console.log("Got message from background.js", request.data);
     window.postMessage({
       method: "znn.accountBlockSent",
       data: request.data
     }, "*");
+    return true;
+  }
+  
+  if (request.message === 'znn.deniedSendAccountBlock') {
+    window.postMessage({
+      method: "znn.deniedSendAccountBlock",
+      error: request.error,
+      data: request.data
+    }, "*");
+    return true;
   }
 
+  return true;
 });
 
 window.addEventListener("message", (event) => {
@@ -66,6 +102,7 @@ window.addEventListener("message", (event) => {
           });
           break;
         }
+        default: {}
       }
     }
   

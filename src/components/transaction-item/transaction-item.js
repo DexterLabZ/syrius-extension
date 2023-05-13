@@ -46,12 +46,22 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
         }
 
       </div>
-      <div className='transaction-data mr-2'>
+      <div className='transaction-data'>
         <div className='d-flex justify-content-between mr-2 transaction-data text-left'>
-          {
-            type[0]?.toUpperCase()+type.slice(1, type.length)+" "
-          }
-          {amount} {tokenSymbol}
+          <div className='d-flex' style={{gap: '0.3rem'}}>
+            <span className=''>
+              {
+                type[0]?.toUpperCase()+type.slice(1, type.length)+" "
+              }
+            </span>
+            <span className='tooltip'>
+              {amount?.toFixed(0)}
+              <span className="tooltip-text text-xs mt-5">{amount?.toFixed(3)}</span>
+            </span> 
+            <span>
+              {tokenSymbol}
+            </span>
+          </div>
           <div className='text-gray text-left text-xs tooltip cursor-pointer' onClick={() => {try{navigator.clipboard.writeText(address); toast(`Address copied`, {
             position: "bottom-center",
             autoClose: 1000,
@@ -78,7 +88,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
               <div className='text-xs'>{address}</div>:
               <>
                 {address.slice(0, 3) + '...' + address.slice(-3)}
-                <span className="tooltip-text text-md ml-5">{address}</span>
+                <span className="tooltip-text text-md ml-5 mt-5">{address}</span>
               </>
             }
             <img alt="" className='ml-1' src={require('./../../assets/copy-icon.png')} width='8px'></img>
@@ -86,7 +96,7 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
         </div>
 
       </div>
-        <a href={'https://explorer.zenon.org/transaction/' + hash} target="_blank">
+        <a href={'https://explorer.zenon.network/transaction/' + hash} target="_blank" rel="noreferrer">
           <div className='tooltip'>
             <div className='squared-button animate-on-hover'>
               <ExternalLinkIcon></ExternalLinkIcon>

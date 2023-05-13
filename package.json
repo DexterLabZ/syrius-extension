@@ -1,6 +1,6 @@
 {
   "name": "syrius-extension",
-  "version": "0.1.0",
+  "version": "0.1.7",
   "description": "Syrius extension provides a non-custodial wallet solution for Zenon - Network of Momentum that can run in the browser.",
   "license": "MIT",
   "repository": {
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "node utils/build.js",
-    "start": "node utils/webserver.js",
+    "start": "cross-env PORT=3001 node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "lint": "eslint src/**/*.js src/**/*.jsx"
   },
@@ -20,7 +20,9 @@
     "base64-loader": "^1.0.0",
     "buffer": "^6.0.3",
     "cipher-base": "^1.0.4",
+    "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
+    "ethers": "^5.7.2",
     "framer-motion": "^4.1.17",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "path": "^0.12.7",
@@ -41,7 +43,7 @@
     "stream-browserify": "^3.0.0",
     "three": "^0.139.2",
     "url-loader": "^4.1.1",
-    "znn-ts-sdk": "dexterlabz/znn.ts"
+    "znn-ts-sdk": "./../znn.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.17.0",

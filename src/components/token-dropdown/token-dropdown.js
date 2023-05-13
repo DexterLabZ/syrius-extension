@@ -34,7 +34,7 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
       if(currentValue.token.tokenStandard === value)
         setSelectedIndex(i);
     })
-  }, [value]);
+  }, [value, options]);
 
   return (
     <div className={`Dropdown-root ${isOpened?'is-open':''}`}>
@@ -45,12 +45,12 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
           onClick={clickControl} ref={selectRef}>
             {
               (selectedIndex || selectedIndex === 0) && (
-                (tokenSymbolPath.split('.').reduce((p,c)=>p&&p[c]||"", options[selectedIndex]))
+                (tokenSymbolPath.split('.').reduce((p,c)=>(p&&p[c])||"", options[selectedIndex]))
                 +" "+
                 ((tokenStandardPath && (
-                  ((tokenStandardPath.split('.').reduce((p,c)=>p&&p[c]||"", options[selectedIndex]))+"").slice(0, 3) 
+                  ((tokenStandardPath.split('.').reduce((p,c)=>(p&&p[c])||"", options[selectedIndex]))+"").slice(0, 3) 
                   + '...' + 
-                  ((tokenStandardPath.split('.').reduce((p,c)=>p&&p[c]||"", options[selectedIndex]))+"").slice(-3)
+                  ((tokenStandardPath.split('.').reduce((p,c)=>(p&&p[c])||"", options[selectedIndex]))+"").slice(-3)
                 )) || "")
               )
             } 
@@ -67,12 +67,12 @@ const TokenDropdown = React.forwardRef(({name, className, options, onChange, onB
               return <div className='Dropdown-option d-flex' key={i} onClick={() => clickOption(i, currentValue)}>
                 {
                   (
-                    (tokenSymbolPath.split('.').reduce((p,c)=>p&&p[c]||"", currentValue))
+                    (tokenSymbolPath.split('.').reduce((p,c)=>(p&&p[c])||"", currentValue))
                     +" "+
                     ((tokenStandardPath && (
-                      ((tokenStandardPath.split('.').reduce((p,c)=>p&&p[c]||"", currentValue))+"").slice(0, 3) 
+                      ((tokenStandardPath.split('.').reduce((p,c)=>(p&&p[c])||"", currentValue))+"").slice(0, 3) 
                       + '...' + 
-                      ((tokenStandardPath.split('.').reduce((p,c)=>p&&p[c]||"", currentValue))+"").slice(-3)
+                      ((tokenStandardPath.split('.').reduce((p,c)=>(p&&p[c])||"", currentValue))+"").slice(-3)
                     )) || "")
                   )
                 }

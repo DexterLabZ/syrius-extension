@@ -11,7 +11,7 @@ const ChangeNodeItem = ({isSelected, onSelect, onRemove, url}) => {
   }
 
   return (
-    <div onClick={() => changeTo(url)} className='change-node mt-2'>
+    <div onClick={() => changeTo(url)} className='change-node mt-2 tooltip'>
       <div className="change-node-icon mr-2">
         {
           isSelected===true 
@@ -23,6 +23,7 @@ const ChangeNodeItem = ({isSelected, onSelect, onRemove, url}) => {
         <div className="text-white text-left text-bold text-sm">
           {url}
         </div>
+        <span className='tooltip-text mt-3'>{url}</span>
       </div>
       <img alt="" className='close-icon' onClick={(e) => {removeNode(url); e.stopPropagation()}} src={require(`./../../assets/close-icon.svg`)}></img>
     </div>
