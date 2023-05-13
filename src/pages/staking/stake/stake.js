@@ -68,9 +68,9 @@ const Stake = () => {
         setUncollectedZnnReward(getUncollectedReward.qsrAmount/Math.pow(10, fallbackValues.availableTokens["zts1znnxxxxxxxxxxxxx9z4ulx"]?.token.decimals || fallbackValues.decimals))
 
         const getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
-        if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {         
-          if(getAccountInfoByAddress.balanceInfoList['zts1znnxxxxxxxxxxxxx9z4ulx']){
-            setZnnAmount(getAccountInfoByAddress.balanceInfoList['zts1znnxxxxxxxxxxxxx9z4ulx'].balance/Math.pow(10, fallbackValues.availableTokens["zts1znnxxxxxxxxxxxxx9z4ulx"]?.token.decimals || fallbackValues.decimals));
+        if(Object.keys(getAccountInfoByAddress.balanceInfoMap).length) {         
+          if(getAccountInfoByAddress.balanceInfoMap['zts1znnxxxxxxxxxxxxx9z4ulx']){
+            setZnnAmount(getAccountInfoByAddress.balanceInfoMap['zts1znnxxxxxxxxxxxxx9z4ulx'].balance/Math.pow(10, fallbackValues.availableTokens["zts1znnxxxxxxxxxxxxx9z4ulx"]?.token.decimals || fallbackValues.decimals));
           }
         }
       }
@@ -258,7 +258,7 @@ const Stake = () => {
       setStakeLabel("Canceled !");
 
       setTimeout(()=>{
-        setStakeLabel("Fuse stake");
+        setStakeLabel("Stake");
       }, 2500);
 
       toast(`Succesfully canceled`, {

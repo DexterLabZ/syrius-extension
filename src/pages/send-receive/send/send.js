@@ -23,7 +23,7 @@ const Send = () => {
   const [sendStatus , setSendStatus] = useState(""); 
   const [selectedToken, setSelectedToken] = useState(availableTokens[0]); 
   const [walletInfo, setWalletInfo] = useState({
-    balanceInfoList: fallbackValues.availableTokens
+    balanceInfoMap: fallbackValues.availableTokens
   }); 
   const zenon = Zenon.getSingleton();
   const myAddressObject = useRef({});
@@ -56,7 +56,7 @@ const Send = () => {
         myAddressObject.current = Primitives.Address.parse(addr);
               
         const getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
-        if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {
+        if(Object.keys(getAccountInfoByAddress.balanceInfoMap).length) {
           setWalletInfo(getAccountInfoByAddress);
         }
       }
@@ -78,7 +78,7 @@ const Send = () => {
         <div>
           <div>Are you sure you want to send</div>
           <div>
-            <b>{sendAmount} {walletInfo.balanceInfoList[selectedToken]?.token?.symbol}</b> 
+            <b>{sendAmount} {walletInfo.balanceInfoMap[selectedToken]?.token?.symbol}</b> 
             {" to"}
           </div>         
           <div className='word-break-all'>{recipientAddress} ?</div>
@@ -99,7 +99,7 @@ const Send = () => {
 
   const sendTransaction = async (address, amount)=>{
     const _keyManager = new KeyStoreManager();
-    const actualAmount = parseInt(amount*Math.pow(10, walletInfo.balanceInfoList[selectedToken]?.token?.decimals));
+    const actualAmount = parseInt(amount*Math.pow(10, walletInfo.balanceInfoMap[selectedToken]?.token?.decimals));
     const currentKeyPair = await (await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName)).getKeyPair(walletCredentials.selectedAddressIndex).generateKeyPair();
     const showSilentSpinner = handleSilentSpinner(
       <>
@@ -113,7 +113,7 @@ const Send = () => {
     try{
       const zenon = Zenon.getSingleton();
       setSendStatus("Sending...");
-      const AccountBlockTemplateSend = Primitives.AccountBlockTemplate.send(Primitives.Address.parse(address), Primitives.TokenStandard.parse(walletInfo.balanceInfoList[selectedToken].token.tokenStandard), actualAmount);
+      const AccountBlockTemplateSend = Primitives.AccountBlockTemplate.send(Primitives.Address.parse(address), Primitives.TokenStandard.parse(walletInfo.balanceInfoMap[selectedToken].token.tokenStandard), actualAmount);
       
       const showPoWSpinner = handleSilentSpinner(
         <>
@@ -155,7 +155,7 @@ const Send = () => {
       reset();
       showSilentSpinner(false);
       
-      toast(`Successfully sent ${amount} ${walletInfo.balanceInfoList[selectedToken]?.token?.symbol}`, {
+      toast(`Successfully sent ${amount} ${walletInfo.balanceInfoMap[selectedToken]?.token?.symbol}`, {
         position: "bottom-center",
         autoClose: 2500,
         hideProgressBar: false,
@@ -213,7 +213,7 @@ const Send = () => {
             <ControlledDropdown dropdownComponent = 'TokenDropdown'
               {...register("selectedTokenField", { required: true })} control={control} 
               name="selectedTokenField" 
-              options={Object.keys(walletInfo.balanceInfoList).map((value)=>{return walletInfo.balanceInfoList[value]})}
+              options={Object.keys(walletInfo.balanceInfoMap).map((value)=>{return walletInfo.balanceInfoMap[value]})}
               onChange={onSelectToken} 
               value={selectedToken} 
               placeholder="Select token"
@@ -231,22 +231,24 @@ const Send = () => {
               <input name="sendAmountField" {...register("sendAmountField", 
                 { required: true, 
                   min: {
-                    value: 1,
+                    value: 0,
                     message: 'Minimum of 1'
                   },
                   max: {
-                    value: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))),
-                    // value: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))),
-                    message: 'Maximum of ' + parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+'')))
+                    value: 999,
+                    // value: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))),
+                    
+                    // value: parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))),
+                    message: 'Maximum of ' + parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+'')))
                   }
                 })} 
                 control={control}
                 className={`w-100 custom-label pr-3 ${errors.sendAmountField?'custom-label-error':''}`}
-                placeholder={walletInfo.balanceInfoList[selectedToken]?.token?.symbol + " amount"} 
+                placeholder={walletInfo.balanceInfoMap[selectedToken]?.token?.symbol + " amount"} 
                 value={sendAmount} onChange={(e) => {setSendAmount(e.target.value); setValue('sendAmountField', e.target.value, {shouldValidate: true})}} type='number'></input>
-              <div className={(walletInfo.balanceInfoList[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " input-chip-button"} 
-                onClick={()=>{setSendAmount(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+'')), { shouldValidate: true })}}>
-                <span>{"MAX: " + parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoList[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoList[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))).toFixed(0)}</span>
+              <div className={(walletInfo.balanceInfoMap[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " input-chip-button"} 
+                onClick={()=>{setSendAmount(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+'')), { shouldValidate: true })}}>
+                <span>{"MAX: " + parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken]?.balance?.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken]?.token?.decimals || fallbackValues.availableTokens[selectedToken]?.token?.decimals || fallbackValues?.decimals)?.toString() || 8)+''))).toFixed(0)}</span>
               </div>
             </div>
 
@@ -269,7 +271,7 @@ const Send = () => {
             <div onClick={() => navigate(-1)} className='button secondary w-100 mr-2 d-flex justify-content-center'>
               Back
             </div>
-            <input className={(walletInfo.balanceInfoList[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " button w-100 d-flex justify-content-center text-white"} 
+            <input className={(walletInfo.balanceInfoMap[selectedToken]?.token?.symbol==='ZNN'?'primary':'blue') + " button w-100 d-flex justify-content-center text-white"} 
               value={sendStatus || "Send"} type="submit" name="submitButton"></input>
           </div>
         </form>

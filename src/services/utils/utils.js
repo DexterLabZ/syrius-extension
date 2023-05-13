@@ -33,7 +33,10 @@ const receiveAllBlocks = async (zenon, currentKeyPair) => {
   
     while (getUnreceivedBlocksByAddress.count > 0) {
       for (let block of getUnreceivedBlocksByAddress.list || []) {
-        await zenon.send(Primitives.AccountBlockTemplate.receive(block.hash), currentKeyPair);
+        const accountBlock = Primitives.AccountBlockTemplate.receive(block.hash);
+        console.log("receiveAllBlocks - accountBlock", accountBlock)
+        console.log("JSON.stringify(accountBlock) - accountBlock", JSON.stringify(accountBlock))
+        await zenon.send(accountBlock, currentKeyPair);
       }
       getUnreceivedBlocksByAddress = (await zenon.ledger
           .getUnreceivedBlocksByAddress(addressObject, 0, memoryPoolPageSize));

@@ -55,8 +55,8 @@ const TransactionItem = ({type, amount, tokenSymbol, address, hash, displayFullA
               }
             </span>
             <span className='tooltip'>
-              {amount.toFixed(0)}
-              <span className="tooltip-text text-xs mt-5">{amount.toFixed(3)}</span>
+              {amount?.toFixed(0)}
+              <span className="tooltip-text text-xs mt-5">{amount?.toFixed(3)}</span>
             </span> 
             <span>
               {tokenSymbol}

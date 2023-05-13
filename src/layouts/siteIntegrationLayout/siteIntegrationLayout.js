@@ -18,7 +18,7 @@ const SiteIntegrationLayout = ()=>{
   const connectionParameters = useSelector(state => state.connectionParameters)
   const zenon = Zenon.getSingleton(); 
   const [walletInfo, setWalletInfo] = useState({
-    balanceInfoList: fallbackValues.availableTokens
+    balanceInfoMap: fallbackValues.availableTokens
   }); 
   const [isFormValid, setIsFormValid] = useState(true);
   const [displayedBlock, setDisplayedBlock] = useState({});
@@ -91,8 +91,8 @@ const SiteIntegrationLayout = ()=>{
   } 
 
   const signTransaction = async()=>{
-    if(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance
-      && parseFloat(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance) >= 
+    if(walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].balance
+      && parseFloat(walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].balance) >= 
       parseFloat(integrationState.transactionData.amount)){
         setIsFormValid(true);
         const showSpinner = handleSpinner(
@@ -296,8 +296,8 @@ const SiteIntegrationLayout = ()=>{
 
         const getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
 
-        if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {
-          getAccountInfoByAddress.balanceInfoList = {...walletInfo.balanceInfoList, ...getAccountInfoByAddress.balanceInfoList}
+        if(Object.keys(getAccountInfoByAddress.balanceInfoMap).length) {
+          getAccountInfoByAddress.balanceInfoMap = {...walletInfo.balanceInfoMap, ...getAccountInfoByAddress.balanceInfoMap}
           setWalletInfo(getAccountInfoByAddress);
         }
 
@@ -400,9 +400,9 @@ const SiteIntegrationLayout = ()=>{
                       <div className='wallet-circle circle-green'>
                         <h4 className='m-0 text-gray'>Available</h4>
                         <h2 className='mb-0 mt-1 tooltip'>
-                          <span className='m-0 '>{parseFloat(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance / Math.pow(10, walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)).toFixed(0)}</span>
-                          <span className='mb-0 text-gray'> {walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.symbol}</span>
-                          <span className='tooltip-text'>{parseFloat(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].balance/Math.pow(10, walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)).toFixed(walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals)}</span>
+                          <span className='m-0 '>{parseFloat(walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].balance / Math.pow(10, walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].token.decimals)).toFixed(0)}</span>
+                          <span className='mb-0 text-gray'> {walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].token.symbol}</span>
+                          <span className='tooltip-text'>{parseFloat(walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].balance/Math.pow(10, walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].token.decimals)).toFixed(walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].token.decimals)}</span>
                         </h2>
 
                         <h4 onClick={() => {try{navigator.clipboard.writeText(address); toast(`Copied to clipboard`, {
@@ -424,8 +424,8 @@ const SiteIntegrationLayout = ()=>{
                     </div>
                     <div className="mt-4 mr-2 ml-2">
                       <h3>Do you want to make this transaction ?</h3>
-                      <TransactionItem displayFullAddress={false} type="send" amount={parseFloat(integrationState.transactionData.amount/Math.pow(10, walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.decimals))}
-                      tokenSymbol={walletInfo.balanceInfoList[integrationState.transactionData.tokenStandard].token.symbol} address={integrationState.transactionData.to}></TransactionItem>
+                      <TransactionItem displayFullAddress={false} type="send" amount={parseFloat(integrationState.transactionData.amount/Math.pow(10, walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].token.decimals))}
+                      tokenSymbol={walletInfo.balanceInfoMap[integrationState.transactionData.tokenStandard].token.symbol} address={integrationState.transactionData.to}></TransactionItem>
 
                       <div className='d-flex mt-4 w-100 justify-content-around'>
                         <div onClick={()=>{denySignTransaction()}} className='button secondary pl-5 pr-5'>No</div>

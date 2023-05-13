@@ -64,9 +64,9 @@ const Plasma = () => {
         setAddress(addr); 
 
         const getAccountInfoByAddress = await zenon.ledger.getAccountInfoByAddress(myAddressObject.current);
-        if(Object.keys(getAccountInfoByAddress.balanceInfoList).length) {    
-          if(getAccountInfoByAddress.balanceInfoList['zts1qsrxxxxxxxxxxxxxmrhjll']){
-            setQsrAmount(getAccountInfoByAddress.balanceInfoList['zts1qsrxxxxxxxxxxxxxmrhjll'].balance/Math.pow(10, fallbackValues.availableTokens["zts1qsrxxxxxxxxxxxxxmrhjll"]?.token.decimals || fallbackValues.decimals));
+        if(Object.keys(getAccountInfoByAddress.balanceInfoMap).length) {    
+          if(getAccountInfoByAddress.balanceInfoMap['zts1qsrxxxxxxxxxxxxxmrhjll']){
+            setQsrAmount(getAccountInfoByAddress.balanceInfoMap['zts1qsrxxxxxxxxxxxxxmrhjll'].balance/Math.pow(10, fallbackValues.availableTokens["zts1qsrxxxxxxxxxxxxxmrhjll"]?.token.decimals || fallbackValues.decimals));
           }      
         }
 
