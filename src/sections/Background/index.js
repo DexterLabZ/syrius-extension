@@ -119,6 +119,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return true;
   }
 
+  if (request.message === 'znn.addressChanged') {
+    // console.log("Got message from popup (siteIntegrationLayout.js)", siteTabId, request.data);
+    chrome.tabs.sendMessage(siteTabId, {
+      message: "znn.addressChanged", 
+      data: request.data
+    }, function(response) {
+      // console.log("Response at znn.deniedSendAccountBlock: ", response)
+    });    
+    return true;
+  }
 
   // 
   // Used for wallet credentials temporary/"session" storage

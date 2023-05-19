@@ -61,6 +61,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return true;
   }
 
+  if (request.message === 'znn.addressChanged') {
+    window.postMessage({
+      method: "znn.addressChanged",
+      data: request.data
+    }, "*");
+    return true;
+  }
+
   return true;
 });
 

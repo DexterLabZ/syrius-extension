@@ -242,11 +242,11 @@ const Dashboard = () => {
         <div className={`wallet-circle circle-${tokenColor}`}>
           <h2 className='mb-0 tooltip'>
             {/* {parseFloat(walletInfo.balanceInfoMap[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoMap[selectedToken].token.decimals)).toFixed(0)}
-            <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoMap[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoMap[selectedToken].token.decimals)).toFixed(3)}</span> */}
+            <span className='tooltip-text mt-2'>{parseFloat(walletInfo.balanceInfoMap[selectedToken].balance/Math.pow(10, walletInfo.balanceInfoMap[selectedToken].token.decimals))}</span> */}
           {
             parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))).toFixed(0)
           }
-          <span className='tooltip-text mt-2'>{parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+''))).toFixed(3)}</span>
+          <span className='tooltip-text mt-2'>{parseFloat(ethers.utils.formatUnits(ethers.BigNumber.from(walletInfo.balanceInfoMap[selectedToken].balance.toString() || 0), ethers.BigNumber.from(((walletInfo.balanceInfoMap[selectedToken].token.decimals || fallbackValues.availableTokens[selectedToken]?.token.decimals || fallbackValues.decimals).toString() || 8)+'')))}</span>
 
           </h2>
           <h4 className='mb-0 mt-1 text-gray'>{walletInfo.balanceInfoMap[selectedToken].token.symbol}</h4>

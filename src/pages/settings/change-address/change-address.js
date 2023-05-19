@@ -68,6 +68,13 @@ const ChangeAddress = () => {
       console.error("Error ", err);
     }
   }
+  
+  const sendChangeAddressEvent = async (newAddress) => {
+    chrome.runtime.sendMessage({
+      message: "znn.addressChanged", 
+      data: {newAddress: newAddress}
+    });
+  } 
 
   const onSelectAddress = async (address) => {
     setCurrentAddress(address);
@@ -79,6 +86,8 @@ const ChangeAddress = () => {
     }
     localStorage.setItem("addressInfo", JSON.stringify(addressInfo.current));
 
+    sendChangeAddressEvent(addresses[address]);
+  
     toast(`Successfully changed address`, {
       position: "top-center",
       autoClose: 2500,
