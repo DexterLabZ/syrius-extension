@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Zenon } from 'znn-ts-sdk';
+import { Zenon, Constants } from 'znn-ts-sdk';
 import ChangeChainIdItem from '../../../components/change-chainId-item/change-chainId-item';
 import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 import { storeChainIdentifier } from '../../../services/redux/connectionParametersSlice';
@@ -26,7 +26,7 @@ const ChangeChainId = () => {
     const connectedChainId = Zenon.getChainIdentifier();
     dispatch(storeChainIdentifier(connectedChainId));
     
-    localStorage.setItem("currentChainId", localStorage.getItem("currentChainId") || connectedChainId);
+    localStorage.setItem(Constants.DEFAULT_CHAINID_PATH, localStorage.getItem(Constants.DEFAULT_CHAINID_PATH) || connectedChainId);
 
     if (chainIdItems.length === 0) {
       if (!defaultChainIds.includes(connectedChainId)) {
@@ -62,7 +62,7 @@ const ChangeChainId = () => {
       Zenon.setChainIdentifier(chainId);
       // await zenon.initialize(chainId, false, 2500)
       setCurrentChainId(chainId);
-      // localStorage.setItem("currentChainId", chainId);
+      // localStorage.setItem(Constants.DEFAULT_CHAINID_PATH, chainId);
       dispatch(storeChainIdentifier(chainId));
       sendChangeChainIdEvent(chainId);
 
