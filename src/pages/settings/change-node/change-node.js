@@ -35,6 +35,13 @@ const ChangeNode = () => {
     setCurrentNode(connectionParameters.nodeUrl);
   }, []);
 
+  const sendChangeNodeEvent = async (newNode) => {
+    chrome.runtime.sendMessage({
+      message: "znn.nodeChanged", 
+      data: {newNode: newNode}
+    });
+  } 
+
   const onSelectNode = async (node) => {
     const showSpinner = handleSpinner(
       <div>
@@ -51,7 +58,8 @@ const ChangeNode = () => {
       setCurrentNode(node);
       localStorage.setItem("currentNodeUrl", node);
       dispatch(storeNodeUrl(node));
-
+      sendChangeNodeEvent(node);
+      
       toast("Updated node url", {
         position: "bottom-center",
         autoClose: 2500,

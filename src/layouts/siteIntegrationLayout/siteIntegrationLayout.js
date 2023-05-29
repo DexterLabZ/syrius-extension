@@ -374,7 +374,7 @@ const SiteIntegrationLayout = ()=>{
                     <p className="text-xs mb-0 mt-5">Address</p>
                     <span className="text-xs text-gray word-break-all">{address}</span>
 
-                    <p className="text-xs mb-0 mt-2">Chain identifier (netId)</p>
+                    <p className="text-xs mb-0 mt-2">Chain identifier</p>
                     <span className="text-xs text-gray word-break-all">{connectionParameters.chainIdentifier}</span>
 
                     <p className="text-xs mb-0 mt-2">Current node</p>

@@ -3,7 +3,8 @@ import NavBack from '../../components/nav-back/nav-back';
 import ProgressSteps from '../../components/progress-steps/progress-steps';
 import {
   KeyStore,
-  KeyStoreManager
+  KeyStoreManager,
+  Constants
 } from 'znn-ts-sdk';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -25,7 +26,7 @@ const Recovery = () => {
 
   useEffect(() => {
     setIsFlowFinished(false);
-    window.localStorage.setItem('OLDwallet', window.localStorage.getItem('wallet'));
+    window.localStorage.setItem('OLDwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
 
     return () => {
       // Called when component is unmounted
@@ -70,7 +71,7 @@ const Recovery = () => {
 
   const saveKeyStore = () => {
     // ToDo - Don't do this manually. Read the first ToDo
-    localStorage.setItem('wallet', window.localStorage.getItem('TEMPwallet'));
+    localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('TEMPwallet'));
     window.localStorage.removeItem('TEMPwallet');
     window.localStorage.removeItem('OLDwallet');
   }
@@ -85,8 +86,8 @@ const Recovery = () => {
         await _keyManager.saveKeyStore(newStore, pass, name);
 
         // ToDo - Don't do this manually. Read the first ToDo
-        window.localStorage.setItem('TEMPwallet', window.localStorage.getItem('wallet'));
-        window.localStorage.removeItem('wallet');
+        window.localStorage.setItem('TEMPwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
+        window.localStorage.removeItem(Constants.DEFAULT_WALLET_PATH);
         resolve(true);
       }
       catch(err){
@@ -187,7 +188,7 @@ const Recovery = () => {
 
   const beforeLeave = ()=>{
     if(!isFlowFinished){
-      localStorage.setItem('wallet', window.localStorage.getItem('OLDwallet'));
+      localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('OLDwallet'));
       window.localStorage.removeItem('TEMPwallet');
       window.localStorage.removeItem('OLDwallet');
     }

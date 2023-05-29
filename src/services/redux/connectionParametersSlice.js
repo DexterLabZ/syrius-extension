@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Zenon, netId } from 'znn-ts-sdk';
+import { Zenon, Constants } from 'znn-ts-sdk';
 
 const initialState = {
   nodeUrl: Zenon.getSingleton().defaultServerUrl,
-  chainIdentifier: netId
+  chainIdentifier: Constants.defaultChainId
 }
 
 export const connectionParametersSlice = createSlice({
