@@ -74,7 +74,7 @@ const SiteIntegrationLayout = ()=>{
       message: "znn.grantedWalletRead", 
       data: {
         address: myAddressObject.current.toString(),
-        chainIdentifier: connectionParameters.chainIdentifier,
+        chainId: connectionParameters.chainIdentifier,
         nodeUrl: connectionParameters.nodeUrl
       }
     });
