@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { storeNodeUrl } from '../../../services/redux/connectionParametersSlice';
 import { loadStorageWalletNames } from '../../../services/utils/utils';
 import { storeChainIdentifier } from '../../../services/redux/connectionParametersSlice';
+import { loadStorageAddressInfo } from './../../../services/utils/utils';
 
 const DashboardPassword = () => { 
   const [walletPassword, setWalletPassword] = useState("");
@@ -95,6 +96,19 @@ const onSelectWallet = (index, value) => {
   setSelectedWallet(value);
 }
 
+const getAddressFromDecrypted = async(decrypted, addressIndex) => {
+  const currentKeyPair = decrypted.getKeyPair(addressIndex);
+  const addr = (await currentKeyPair.getAddress()).toString();
+  return addr;
+}
+
+const sendChangeAddressEvent = async (newAddress) => {
+  chrome.runtime.sendMessage({
+    message: "znn.addressChanged", 
+    data: {newAddress: newAddress}
+  });
+} 
+
 const unlockWallet = async (pass, name)=>{
   const _keyManager = new KeyStoreManager();
   setUnlockStatusLabel("Unlocking in progress ...");
@@ -114,16 +128,20 @@ const unlockWallet = async (pass, name)=>{
       await zenon.initialize(currentNodeUrl);
       dispatch(storeNodeUrl(currentNodeUrl));
       dispatch(storeChainIdentifier(Zenon.getChainIdentifier()));
-      
       dispatch(loadAddressInfoForWalletFromStorage(name));
 
       setUnlockStatusLabel("Unlocked !");
       storeCredentialsToBackgroundScript(pass, name);
-
+    
       if(integrationFlowState.currentIntegrationFlow !== ""){
         navigate("/site-integration");
       }
       else{
+        const addressInfo = loadStorageAddressInfo(name);
+        console.log("addressInfo", addressInfo);
+  
+        sendChangeAddressEvent(await getAddressFromDecrypted(decrypted, addressInfo.selectedAddressIndex));
+  
         navigate("/tabs");
       }
   

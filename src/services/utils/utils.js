@@ -59,5 +59,24 @@ const loadStorageWalletNames = () => {
   }
   return wallets;
 }
+
+const defaultSelectedAddressIndex = 0;
+const defaultMaxAddressIndex = 0;
+
+const loadStorageAddressInfo = (walletName) => {
+  const addressInfo = JSON.parse(localStorage.getItem("addressInfo"));
+  if(addressInfo){
+    if(walletName && !addressInfo[walletName]){
+      addressInfo[walletName] = {
+        selectedAddressIndex: defaultSelectedAddressIndex,
+        maxAddressIndex: defaultMaxAddressIndex
+      };
+    }
+  }
+  return {
+    selectedAddressIndex: addressInfo[walletName].selectedAddressIndex,
+    maxAddressIndex: addressInfo[walletName].maxAddressIndex
+  };
+}
     
-export {arrayShuffle, receiveAllBlocks, loadStorageWalletNames};
+export {arrayShuffle, receiveAllBlocks, loadStorageWalletNames, loadStorageAddressInfo, defaultSelectedAddressIndex, defaultMaxAddressIndex};
