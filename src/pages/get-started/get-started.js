@@ -20,7 +20,6 @@ const GetStarted = () => {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [currentFlowStep, setCurrentFlowStep] = useState(0);
-  const [isFlowFinished, setIsFlowFinished] = useState(false);
   const [shuffledMnemonic, setShuffledMnemonic] = useState([]);
   const [orderedMnemonic, setOrderedMnemonic] = useState([]);
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
@@ -31,23 +30,6 @@ const GetStarted = () => {
   useEffect(() => {
     setShuffledMnemonic(shuffledMnemonic);
   }, [shuffledMnemonic]);
-
-  useEffect(() => {
-    setIsFlowFinished(false);
-    // window.localStorage.setItem('OLDwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
-
-    return () => {
-      // Called when component is unmounted
-       
-      // Delete the keyStore if flow isn't finished
-      // if(!isFlowFinished){
-        // ToDo - Don't do this manually. Create a deleteKeyStore in ts sdk
-        // Or create a getMnemonic() function that only returns a mnemonic but doesn't create a new keyStore yet
-        // window.localStorage.removeItem('TEMPwallet');
-        // window.localStorage.removeItem('OLDwallet');
-      // }
-    };
-  },[]);
 
   const validateCredentials = async (walletName, password, repeatPassword) => {
     if(walletName && password && password === repeatPassword){
@@ -83,33 +65,6 @@ const GetStarted = () => {
       return "Invalid wallet name"
     }
   }
-
-  // const saveKeyStore = () => {
-  //   // ToDo - Don't do this manually. Read the first ToDo
-  //   localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('TEMPwallet'));
-  //   window.localStorage.removeItem('TEMPwallet');
-  //   window.localStorage.removeItem('OLDwallet');
-  // }
-  
-  // const getNewMnemonic = async () => {
-  //   return new Promise(async (resolve, reject)=>{
-  //     const _keyManager = new KeyStoreManager();
-  //     _keyManager.createNew(pass, name)
-  //       .then(async res => {      
-  //         const tempMnemonic = (await _keyManager.readKeyStore(pass, name))['mnemonic'];
-          
-  //         // ToDo - Don't do this manually. Read the first ToDo
-  //         window.localStorage.setItem('TEMPwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
-  //         window.localStorage.removeItem(Constants.DEFAULT_WALLET_PATH);
-
-  //         resolve(tempMnemonic);
-  //       })
-  //       .catch(err => {
-  //         reject(err);
-  //         console.error(err);
-  //       });
-  //     })
-  // }
 
   const saveKeyStore = async (store, pass, name) => {
     const _keyManager = new KeyStoreManager();
@@ -169,7 +124,6 @@ const GetStarted = () => {
           try{
             if(isCorrectMnemonic(orderedMnemonic)){
               saveKeyStore(newlyCreatedStore, password, walletName);
-              setIsFlowFinished(true);  
               isValidated = true;
             }
             else{
@@ -229,14 +183,6 @@ const GetStarted = () => {
 
     return orderedMnemonic.length === originalMnemonic.length && orderedMnemonic.every((value, index) => value === originalMnemonic[index])
   }
-
-  // const beforeLeave = ()=>{
-  //   if(!isFlowFinished){
-  //     localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('OLDwallet'));
-  //     window.localStorage.removeItem('TEMPwallet');
-  //     window.localStorage.removeItem('OLDwallet');
-  //   }
-  // }
 
   return (
     <div className='black-bg onboarding-layout'>

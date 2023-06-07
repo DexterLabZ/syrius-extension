@@ -18,29 +18,10 @@ const Recovery = () => {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [currentFlowStep, setCurrentFlowStep] = useState(0);
-  const [isFlowFinished, setIsFlowFinished] = useState();
   const passwordValidationInfo = fallbackValues.passwordValidationInfo;
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setIsFlowFinished(false);
-    // window.localStorage.setItem('OLDwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
-
-    return () => {
-      // Called when component is unmounted
-       
-      // Delete the keyStore if flow isn't finished
-      // if(!isFlowFinished){
-        // ToDo - Don't do this manually. Create a deleteKeyStore in ts sdk
-        // Or create a getMnemonic() function that only returns a mnemonic but doesn't create a new keyStore yet
-        // window.localStorage.removeItem('TEMPwallet');
-        // window.localStorage.removeItem('OLDwallet');
-      // }
-    };
-  },[]);
-
 
   const validateCredentials = async (mnemonic, walletName, password, repeatPassword) => {
     if(walletName && password && password === repeatPassword){
@@ -69,13 +50,6 @@ const Recovery = () => {
     }
   }
 
-  // const saveKeyStore = () => {
-  //   // ToDo - Don't do this manually. Read the first ToDo
-  //   localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('TEMPwallet'));
-  //   window.localStorage.removeItem('TEMPwallet');
-  //   window.localStorage.removeItem('OLDwallet');
-  // }
-
   const saveNewKeyStore = async (mnemonic, pass, name) => {
     const _keyManager = new KeyStoreManager();
     const _keyStore = new KeyStore();
@@ -85,7 +59,6 @@ const Recovery = () => {
 
   const createKeystoreFromMnemonic = (mnemonic, pass, name) => {
     return new Promise(async (resolve, reject)=>{
-      // const _keyManager = new KeyStoreManager();
       const _keyStore = new KeyStore();
 
       try{
@@ -95,12 +68,6 @@ const Recovery = () => {
         }else{
           reject(false);
         }
-        // await _keyManager.saveKeyStore(newStore, pass, name);
-
-        // // ToDo - Don't do this manually. Read the first ToDo
-        // window.localStorage.setItem('TEMPwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
-        // window.localStorage.removeItem(Constants.DEFAULT_WALLET_PATH);
-        // resolve(true);
       }
       catch(err){
         console.error(err);
@@ -160,7 +127,6 @@ const Recovery = () => {
             throw new Error(isValid);
           }
           isValidated = true;
-          setIsFlowFinished(true);  
           saveNewKeyStore(mnemonic, password, walletName);  
         }
         catch(err){
@@ -197,14 +163,6 @@ const Recovery = () => {
     }
 
   };
-
-  // const beforeLeave = ()=>{
-  //   if(!isFlowFinished){
-  //     localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('OLDwallet'));
-  //     window.localStorage.removeItem('TEMPwallet');
-  //     window.localStorage.removeItem('OLDwallet');
-  //   }
-  // }
 
   return (
     <div className='black-bg onboarding-layout'>
