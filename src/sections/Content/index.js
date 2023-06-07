@@ -61,6 +61,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return true;
   }
 
+  if (request.message === 'znn.addressChanged') {
+    window.postMessage({
+      method: "znn.addressChanged",
+      data: request.data
+    }, "*");
+    return true;
+  }
+
+  if (request.message === 'znn.chainIdChanged') {
+    window.postMessage({
+      method: "znn.chainIdChanged",
+      data: request.data
+    }, "*");
+    return true;
+  }
+
+  if (request.message === 'znn.nodeChanged') {
+    window.postMessage({
+      method: "znn.nodeChanged",
+      data: request.data
+    }, "*");
+    return true;
+  }
+
   return true;
 });
 

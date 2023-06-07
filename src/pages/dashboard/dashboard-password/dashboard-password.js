@@ -13,6 +13,7 @@ import ControlledDropdown from '../../../components/custom-dropdown/controlled-d
 import { toast } from 'react-toastify';
 import { storeNodeUrl } from '../../../services/redux/connectionParametersSlice';
 import { loadStorageWalletNames } from '../../../services/utils/utils';
+import { storeChainIdentifier } from '../../../services/redux/connectionParametersSlice';
 
 const DashboardPassword = () => { 
   const [walletPassword, setWalletPassword] = useState("");
@@ -112,6 +113,8 @@ const unlockWallet = async (pass, name)=>{
 
       await zenon.initialize(currentNodeUrl);
       dispatch(storeNodeUrl(currentNodeUrl));
+      dispatch(storeChainIdentifier(Zenon.getChainIdentifier()));
+      
       dispatch(loadAddressInfoForWalletFromStorage(name));
 
       setUnlockStatusLabel("Unlocked !");

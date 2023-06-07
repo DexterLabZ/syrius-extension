@@ -3,6 +3,7 @@ import NavBack from '../../components/nav-back/nav-back';
 import ProgressSteps from '../../components/progress-steps/progress-steps';
 import {
   KeyStoreManager,
+  Constants
 } from 'znn-ts-sdk';
 
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +15,11 @@ import fallbackValues from '../../services/utils/fallbackValues';
 
 const GetStarted = () => {
   const [mnemonic, setMnemonic] = useState("");
+  const [newlyCreatedStore, setNewlyCreatedStore] = useState();
   const [walletName, setWalletName] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [currentFlowStep, setCurrentFlowStep] = useState(0);
-  const [isFlowFinished, setIsFlowFinished] = useState(false);
   const [shuffledMnemonic, setShuffledMnemonic] = useState([]);
   const [orderedMnemonic, setOrderedMnemonic] = useState([]);
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
@@ -29,23 +30,6 @@ const GetStarted = () => {
   useEffect(() => {
     setShuffledMnemonic(shuffledMnemonic);
   }, [shuffledMnemonic]);
-
-  useEffect(() => {
-    setIsFlowFinished(false);
-    window.localStorage.setItem('OLDwallet', window.localStorage.getItem('wallet'));
-
-    return () => {
-      // Called when component is unmounted
-       
-      // Delete the keyStore if flow isn't finished
-      // if(!isFlowFinished){
-        // ToDo - Don't do this manually. Create a deleteKeyStore in ts sdk
-        // Or create a getMnemonic() function that only returns a mnemonic but doesn't create a new keyStore yet
-        window.localStorage.removeItem('TEMPwallet');
-        window.localStorage.removeItem('OLDwallet');
-      // }
-    };
-  },[]);
 
   const validateCredentials = async (walletName, password, repeatPassword) => {
     if(walletName && password && password === repeatPassword){
@@ -82,32 +66,15 @@ const GetStarted = () => {
     }
   }
 
-  const saveKeyStore = () => {
-    // ToDo - Don't do this manually. Read the first ToDo
-    localStorage.setItem('wallet', window.localStorage.getItem('TEMPwallet'));
-    window.localStorage.removeItem('TEMPwallet');
-    window.localStorage.removeItem('OLDwallet');
+  const saveKeyStore = async (store, pass, name) => {
+    const _keyManager = new KeyStoreManager();
+    return await _keyManager.saveKeyStore(store, pass, name);
   }
-  
-  const getNewMnemonic = async (pass, name) => {
-    return new Promise((resolve, reject)=>{
-      const _keyManager = new KeyStoreManager();
-      _keyManager.createNew(pass, name)
-        .then(async res => {      
-          const tempMnemonic = (await _keyManager.readKeyStore(pass, name))['mnemonic'];
-          
-          // ToDo - Don't do this manually. Read the first ToDo
-          window.localStorage.setItem('TEMPwallet', window.localStorage.getItem('wallet'));
-          window.localStorage.removeItem('wallet');
 
-          resolve(tempMnemonic);
-        })
-        .catch(err => {
-          reject(err);
-          console.error(err);
-        });
-      })
-  }
+  const getNewStore = async () => {
+    const _keyManager = new KeyStoreManager();
+    return await _keyManager.getNewKeystore();
+  };
     
   const nextStep = async () => {
       let isValidated = false;
@@ -120,7 +87,9 @@ const GetStarted = () => {
             if(isValid!==true) {
               throw new Error(isValid);
             }
-            const generatedMnemonic = await getNewMnemonic(password, walletName)
+            const newStore = await getNewStore()
+            setNewlyCreatedStore(newStore);
+            const generatedMnemonic = newStore['mnemonic'];
             setMnemonic(generatedMnemonic);
             setShuffledMnemonic(arrayShuffle(generatedMnemonic.split(" ")));
             isValidated = true;
@@ -152,14 +121,36 @@ const GetStarted = () => {
           break;
         }
         case 2:{
-          if(isCorrectMnemonic(orderedMnemonic)){
-            saveKeyStore();
-            setIsFlowFinished(true);  
-            isValidated = true;
+          try{
+            if(isCorrectMnemonic(orderedMnemonic)){
+              saveKeyStore(newlyCreatedStore, password, walletName);
+              isValidated = true;
+            }
+            else{
+              console.error("Invalid mnemonic");
+              throw(Error("Invalid mnemonic"));
+            }
           }
-          else{
-            console.error("Invalid mnemonic");
-        }
+          catch(err){
+            console.error(err);
+            let readableError = err;
+            if(err.message) {
+              readableError = err.message;
+            }
+            readableError = (readableError+"").split("Error: ")[(readableError+"").split("Error: ").length-1];
+      
+            toast(readableError + "",{    
+              position: "bottom-center",
+              autoClose: 2500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              newestOnTop: true,
+              type: 'error',
+              theme: 'dark'
+            });
+          }
         break;
       }
 
@@ -193,19 +184,11 @@ const GetStarted = () => {
     return orderedMnemonic.length === originalMnemonic.length && orderedMnemonic.every((value, index) => value === originalMnemonic[index])
   }
 
-  const beforeLeave = ()=>{
-    if(!isFlowFinished){
-      localStorage.setItem('wallet', window.localStorage.getItem('OLDwallet'));
-      window.localStorage.removeItem('TEMPwallet');
-      window.localStorage.removeItem('OLDwallet');
-    }
-  }
-
   return (
     <div className='black-bg onboarding-layout'>
       <div className='header'>
         <div className='back-button-container'>
-          <NavBack beforeLeave={()=>beforeLeave()}/>
+          <NavBack/>
         </div>
         <h1 className='mt-0'>Backup phrase</h1>
         {/* <h1 className='mt-0'>Confirm backup phrase</h1> */}

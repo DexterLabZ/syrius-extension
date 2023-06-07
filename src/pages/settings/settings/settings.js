@@ -21,7 +21,14 @@ const Settings = () => {
       title: "Node management",
       description: "You can change your current node url here",
       url: "change-node",
+    },
+    {
+      icon: "change-chainId",
+      title: "ChainId management",
+      description: "You can change your current chainId here",
+      url: "change-chainId",
     }
+
   ]
   useEffect(() => {
   }, []);

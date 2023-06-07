@@ -13,6 +13,7 @@ import {AnimatePresence} from 'framer-motion';
 import MenuHeader from '../../pages/menu/menu-header/menu-header';
 import Settings from '../../pages/settings/settings/settings';
 import ChangeNode from '../../pages/settings/change-node/change-node';
+import ChangeChainId from '../../pages/settings/change-chainId/change-chainId';
 import ExportMnemonic from '../../pages/settings/export-mnemonic/export-mnemonic';
 import ChangeAddress from '../../pages/settings/change-address/change-address';
 
@@ -40,9 +41,10 @@ const TabsLayout = () => {
             <Route path="stake" element={<Stake/>}/>
             <Route path="change-address" element={<ChangeAddress/>}/>
             <Route path="settings" element={<Settings/>}/>
-            <Route path="settings/change-password" element={<ChangeNode/>}/>
+            {/* <Route path="settings/change-password" element={<ChangeNode/>}/> */}
             <Route path="settings/export-mnemonic" element={<ExportMnemonic/>}/>
             <Route path="settings/change-node" element={<ChangeNode/>}/>
+            <Route path="settings/change-chainId" element={<ChangeChainId/>}/>
           </Routes>
         </AnimatePresence>
         <MenuTabs />

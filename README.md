@@ -29,15 +29,19 @@ const listenToExtension = function() {
       if(parsedData.method){
         switch(parsedData.method){
           case "znn.grantedWalletRead":{
-            const result = JSON.stringify(parsedData.data);
+            const result = parsedData.data;
             break;
           }
           case "znn.signedTransaction": {
-            const result = JSON.stringify(parsedData.data);
+            const result = parsedData.data;
             break;
           }
           case "znn.accountBlockSent": {
-            const result = JSON.stringify(parsedData.data);
+            const result = parsedData.data;
+            break;
+          }
+          case "znn.addressChanged": {
+            const newAddress = parsedData.data?.newAddress;
             break;
           }
         }

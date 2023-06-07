@@ -1753,6 +1753,44 @@ img.button{
   overflow: hidden;
 }
 
+
+.change-chainId {
+  display: flex;
+  justify-content: flex-start;
+  background: #232323;
+  border-radius: 6px;
+  padding: 0.5em 1em;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+
+  &:hover{
+    background: lighten($color: #232323, $amount: 5);
+    box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.change-chainId-icon {
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+  padding: 0.2em;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+.change-chainId-data {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
 .dead-center{
   position: absolute !important;
   top: 50% !important;
