@@ -26,7 +26,7 @@ const Recovery = () => {
 
   useEffect(() => {
     setIsFlowFinished(false);
-    window.localStorage.setItem('OLDwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
+    // window.localStorage.setItem('OLDwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
 
     return () => {
       // Called when component is unmounted
@@ -35,8 +35,8 @@ const Recovery = () => {
       // if(!isFlowFinished){
         // ToDo - Don't do this manually. Create a deleteKeyStore in ts sdk
         // Or create a getMnemonic() function that only returns a mnemonic but doesn't create a new keyStore yet
-        window.localStorage.removeItem('TEMPwallet');
-        window.localStorage.removeItem('OLDwallet');
+        // window.localStorage.removeItem('TEMPwallet');
+        // window.localStorage.removeItem('OLDwallet');
       // }
     };
   },[]);
@@ -69,26 +69,38 @@ const Recovery = () => {
     }
   }
 
-  const saveKeyStore = () => {
-    // ToDo - Don't do this manually. Read the first ToDo
-    localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('TEMPwallet'));
-    window.localStorage.removeItem('TEMPwallet');
-    window.localStorage.removeItem('OLDwallet');
+  // const saveKeyStore = () => {
+  //   // ToDo - Don't do this manually. Read the first ToDo
+  //   localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('TEMPwallet'));
+  //   window.localStorage.removeItem('TEMPwallet');
+  //   window.localStorage.removeItem('OLDwallet');
+  // }
+
+  const saveNewKeyStore = async (mnemonic, pass, name) => {
+    const _keyManager = new KeyStoreManager();
+    const _keyStore = new KeyStore();
+    const newStore = _keyStore.fromMnemonic(mnemonic);
+    await _keyManager.saveKeyStore(newStore, pass, name);
   }
 
   const createKeystoreFromMnemonic = (mnemonic, pass, name) => {
     return new Promise(async (resolve, reject)=>{
-      const _keyManager = new KeyStoreManager();
+      // const _keyManager = new KeyStoreManager();
       const _keyStore = new KeyStore();
 
       try{
         const newStore = _keyStore.fromMnemonic(mnemonic);
-        await _keyManager.saveKeyStore(newStore, pass, name);
+        if(newStore){
+          resolve(true);
+        }else{
+          reject(false);
+        }
+        // await _keyManager.saveKeyStore(newStore, pass, name);
 
-        // ToDo - Don't do this manually. Read the first ToDo
-        window.localStorage.setItem('TEMPwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
-        window.localStorage.removeItem(Constants.DEFAULT_WALLET_PATH);
-        resolve(true);
+        // // ToDo - Don't do this manually. Read the first ToDo
+        // window.localStorage.setItem('TEMPwallet', window.localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
+        // window.localStorage.removeItem(Constants.DEFAULT_WALLET_PATH);
+        // resolve(true);
       }
       catch(err){
         console.error(err);
@@ -149,7 +161,7 @@ const Recovery = () => {
           }
           isValidated = true;
           setIsFlowFinished(true);  
-          saveKeyStore();  
+          saveNewKeyStore(mnemonic, password, walletName);  
         }
         catch(err){
           console.error(err);
@@ -186,19 +198,19 @@ const Recovery = () => {
 
   };
 
-  const beforeLeave = ()=>{
-    if(!isFlowFinished){
-      localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('OLDwallet'));
-      window.localStorage.removeItem('TEMPwallet');
-      window.localStorage.removeItem('OLDwallet');
-    }
-  }
+  // const beforeLeave = ()=>{
+  //   if(!isFlowFinished){
+  //     localStorage.setItem(Constants.DEFAULT_WALLET_PATH, window.localStorage.getItem('OLDwallet'));
+  //     window.localStorage.removeItem('TEMPwallet');
+  //     window.localStorage.removeItem('OLDwallet');
+  //   }
+  // }
 
   return (
     <div className='black-bg onboarding-layout'>
       <div className='header'>
         <div className='back-button-container'>
-          <NavBack beforeLeave={()=>beforeLeave()}/>
+          <NavBack/>
         </div>
       <h1 className='mt-0'>Import seed</h1>
       </div>
