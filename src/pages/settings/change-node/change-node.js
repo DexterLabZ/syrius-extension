@@ -16,6 +16,7 @@ const ChangeNode = () => {
   const connectionParameters = useSelector(state => state.connectionParameters);
   const dispatch = useDispatch();
   let defaultNodes = [
+    "wss://syrius-mainnet.zenon.community",
     "wss://syrius-testnet.zenon.community",
     "ws://127.0.0.1:35998",
   ]
