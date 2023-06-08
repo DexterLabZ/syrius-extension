@@ -17,8 +17,9 @@ const InitialNodeSelection = () => {
   const connectionParameters = useSelector(state => state.connectionParameters);
   const dispatch = useDispatch();
   let defaultNodes = [
-    "wss://syrius-testnet.zenon.community",
-    "ws://127.0.0.1:35998"
+    "wss://my.hc1node.com:35998",
+    "wss://secure.deeznnodez.com:35998",
+    "ws://127.0.0.1:35998",
   ]
   const [nodeItems, setNodeItems] = useState(JSON.parse(localStorage.getItem("nodeList")) || []);
   const navigate = useNavigate();
