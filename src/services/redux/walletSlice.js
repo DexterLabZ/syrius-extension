@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {loadStorageAddressInfo} from "./../utils/utils";
 
 const initialState = {
   walletName: "",
@@ -21,18 +22,12 @@ export const walletSlice = createSlice({
       state.walletPassword = action.payload;
     },
     loadAddressInfoForWalletFromStorage: (state, action)=>{
-      const addressInfo = JSON.parse(localStorage.getItem("addressInfo"));
+      const addressInfo = loadStorageAddressInfo(action.payload);
       if(addressInfo){
-        if(!action.payload || !addressInfo[action.payload]){
-            addressInfo[action.payload] = {
-              selectedAddressIndex: initialState.selectedAddressIndex,
-              maxAddressIndex: initialState.maxAddressIndex
-            };
-          }
-
-        state.selectedAddressIndex = addressInfo[state.walletName].selectedAddressIndex;
-        state.maxAddressIndex = addressInfo[state.walletName].maxAddressIndex;
+        state.selectedAddressIndex = addressInfo.selectedAddressIndex;
+        state.maxAddressIndex = addressInfo.maxAddressIndex;
       }
+      return state;
     },
     storeSelectedAddressIndex: (state, action) => {
       state.selectedAddressIndex = action.payload;
