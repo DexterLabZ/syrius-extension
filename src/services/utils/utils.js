@@ -1,4 +1,4 @@
-import { KeyStoreManager, Primitives } from 'znn-ts-sdk';
+import { KeyStoreManager, Primitives, Constants } from 'znn-ts-sdk';
 const memoryPoolPageSize = 50;
 
 const arrayShuffle = (array) => {
@@ -64,7 +64,7 @@ const defaultSelectedAddressIndex = 0;
 const defaultMaxAddressIndex = 0;
 
 const loadStorageAddressInfo = (walletName) => {
-  const addressInfo = JSON.parse(localStorage.getItem("addressInfo"));
+  const addressInfo = JSON.parse(localStorage.getItem(Constants.DEFAULT_WALLET_PATH));
   if(addressInfo){
     if(walletName && !addressInfo[walletName]){
       addressInfo[walletName] = {
