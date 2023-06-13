@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { KeyStoreManager } from 'znn-ts-sdk';
+import { KeyStoreManager, Constants } from 'znn-ts-sdk';
 import ChangeAddressItem from '../../../components/change-address-item/change-address-item';
 import { SpinnerContext } from '../../../services/hooks/spinner/spinnerContext';
 import { storeMaxAddressIndex, storeSelectedAddressIndex } from '../../../services/redux/walletSlice';
@@ -44,6 +44,7 @@ const ChangeAddress = () => {
       showSpinner(true);
       setAddresses([]);
       const decrypted = await _keyManager.readKeyStore(pass, name);
+      console.log("decrypted", decrypted)
       let newAddresses = [];
       if(decrypted){
         for(let i = 0 ; i<maxIndex; i++){
