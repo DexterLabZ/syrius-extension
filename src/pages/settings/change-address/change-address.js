@@ -44,7 +44,6 @@ const ChangeAddress = () => {
       showSpinner(true);
       setAddresses([]);
       const decrypted = await _keyManager.readKeyStore(pass, name);
-      console.log("decrypted", decrypted)
       let newAddresses = [];
       if(decrypted){
         for(let i = 0 ; i<maxIndex; i++){
