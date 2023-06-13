@@ -64,31 +64,30 @@ const defaultSelectedAddressIndex = 0;
 const defaultMaxAddressIndex = 1;
 
 const loadStorageAddressInfo = (walletName) => {
-  const addressInfo = JSON.parse(localStorage.getItem("addressInfo"));
-  if(addressInfo){
-    if(walletName && !addressInfo[walletName]){
-      addressInfo[walletName] = {
-        selectedAddressIndex: defaultSelectedAddressIndex,
-        maxAddressIndex: defaultMaxAddressIndex
-      };
-    }
-    return {
-      selectedAddressIndex: addressInfo[walletName].selectedAddressIndex,
-      maxAddressIndex: addressInfo[walletName].maxAddressIndex
-    };
-  }else{
-    return setDefaultAddressInfo(walletName);
-  }
-}
-
-const setDefaultAddressInfo = (walletName) => {
   const defaultAddressInfo = {};
   defaultAddressInfo[walletName] = {
     selectedAddressIndex: defaultSelectedAddressIndex,
     maxAddressIndex: defaultMaxAddressIndex
   }
-  localStorage.setItem("addressInfo", JSON.stringify(defaultAddressInfo));
-  return defaultAddressInfo[walletName];
+  const addressInfo = JSON.parse(localStorage.getItem("addressInfo"));
+
+  if(addressInfo){
+    if(walletName && 
+      (!addressInfo[walletName] || 
+        (addressInfo[walletName] && 
+          (!addressInfo[walletName].maxAddressIndex || !addressInfo[walletName].selectedAddressIndex)))){
+      addressInfo[walletName] = defaultAddressInfo[walletName];
+    }
+    setAddressInfoToStorage(addressInfo)
+    return addressInfo[walletName]; 
+  }else{
+    setAddressInfoToStorage(defaultAddressInfo);
+    return defaultAddressInfo[walletName];
+  }
+}
+
+const setAddressInfoToStorage = (addressInfo) => {
+  localStorage.setItem("addressInfo", JSON.stringify(addressInfo));
 }
     
-export {arrayShuffle, receiveAllBlocks, loadStorageWalletNames, loadStorageAddressInfo, setDefaultAddressInfo, defaultSelectedAddressIndex, defaultMaxAddressIndex};
+export {arrayShuffle, receiveAllBlocks, loadStorageWalletNames, loadStorageAddressInfo, setAddressInfoToStorage, defaultSelectedAddressIndex, defaultMaxAddressIndex};
