@@ -199,12 +199,8 @@ const SiteIntegrationLayout = ()=>{
       
       try{
         const accountBlockTemplateSend = Primitives.AccountBlockTemplate.fromJson(integrationState.accountBlockData);
-        console.log("accountBlockTemplateSend", accountBlockTemplateSend);
         const _keyManager = new KeyStoreManager();        
-        console.log("_keyManager", _keyManager);
         const decrypted = await _keyManager.readKeyStore(walletCredentials.walletPassword, walletCredentials.walletName);
-        console.log("decrypted", decrypted);
-        
         
         if(decrypted){
           const currentKeyPair = decrypted.getKeyPair(walletCredentials.selectedAddressIndex);
